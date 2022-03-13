@@ -1,0 +1,17 @@
+[user]
+  name = {{GIT_CONFIG_USERNAME}}
+  email = {{GIT_CONFIG_EMAIL}}
+[push]
+  default = current
+[pull]
+  rebase = false
+[filter "lfs"]
+  clean = git-lfs clean %f
+  smudge = git-lfs smudge %f
+  required = true
+[core]
+  excludesfile = /home/coder/.gitignore_global
+[commit]
+  template = /home/coder/.stCommitMsg
+[init]
+  defaultBranch = main
