@@ -4,7 +4,6 @@
 
 setupNodeVersion() {
   nvm install $1
-  nvm use $1
 
   npm install --global\
   vercel\
