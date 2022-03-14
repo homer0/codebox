@@ -6,8 +6,8 @@ ENV NODE_DEFAULT_VERSION 16
 
 # Install dependencies
 
-## SSH and nginx
-RUN sudo apt update && sudo apt install openssh-server nginx -y
+## apt packages
+RUN sudo apt update && sudo apt install openssh-server nginx locales-all -y
 
 ## oh-my-zsh
 RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
@@ -38,8 +38,11 @@ RUN sed -i "s/{{GIT_CONFIG_EMAIL}}/$GIT_CONFIG_EMAIL/" /home/coder/.gitconfig
 COPY ./src/git/.gitignore_global /home/coder/.gitignore_global
 
 # Fix locales
-
-RUN sudo echo "LANG=en_US.utf-8\nLC_ALL=en_US.utf-8" >> /etc/environment
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+RUN echo "# Locales\n\nexport LC_ALL=$LC_ALL\nexport LANGUAGE=$LANGUAGE\nexport LANG=$LANG\n" >> /home/coder/.zshrc
 
 # Replace shell
 RUN sudo chsh -s $(which zsh)
