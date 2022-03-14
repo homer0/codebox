@@ -55,7 +55,7 @@ RUN echo "# Locales\n\nexport LC_ALL=$LC_ALL\nexport LANGUAGE=$LANGUAGE\nexport 
 RUN sudo chsh -s $(which zsh)
 RUN sudo usermod -s $(which zsh) coder
 
-## Setup SSH
+# Setup SSH
 RUN mkdir -p /home/coder/.ssh
 COPY ./src/ssh/id_rsa /home/coder/.ssh/id_rsa
 COPY ./src/ssh/id_rsa.pub /home/coder/.ssh/id_rsa.pub
@@ -67,7 +67,9 @@ RUN sudo sed -i "s/UsePAM yes/UsePAM no/" /etc/ssh/sshd_config
 RUN sudo service ssh restart
 RUN sudo sed -i 's/exec /sudo service ssh restart\nexec /' /usr/bin/entrypoint.sh
 
+# SETUP nginx
+COPY ./src/nginx/default-site /etc/nginx/sites-available/default
+RUN sudo sed -i 's/exec /sudo service nginx restart\nexec /' /usr/bin/entrypoint.sh
+
 EXPOSE 22
 EXPOSE 80
-EXPOSE 443
-

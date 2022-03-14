@@ -21,6 +21,8 @@ fi
 # BUILD IMAGE
 echo "=== Build image $IMAGE_NAME"
 docker build -t $IMAGE_NAME \
+  --build-arg GIT_CONFIG_USERNAME="homer0" \
+  --build-arg GIT_CONFIG_EMAIL="me@homer0.dev" \
   --build-arg CODEBOX_NAME="codebox-test" \
   .
 
@@ -28,6 +30,7 @@ docker build -t $IMAGE_NAME \
 echo "=== Create container $CONTAINER_NAME"
 docker run -d --name $CONTAINER_NAME \
   -p 4522:22 \
+  -p 4580:80 \
   $IMAGE_NAME
 
 echo "=== Done"
