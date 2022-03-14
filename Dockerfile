@@ -67,9 +67,23 @@ RUN sudo sed -i "s/UsePAM yes/UsePAM no/" /etc/ssh/sshd_config
 RUN sudo service ssh restart
 RUN sudo sed -i 's/exec /sudo service ssh restart\nexec /' /usr/bin/entrypoint.sh
 
-# SETUP nginx
+# Setup nginx
 COPY ./src/nginx/default-site /etc/nginx/sites-available/default
 RUN sudo sed -i 's/exec /sudo service nginx restart\nexec /' /usr/bin/entrypoint.sh
+
+# Setup code-server
+COPY ./src/code-server /home/coder/code-server-setup
+RUN sudo chown -R coder:coder /home/coder/code-server-setup
+
+## Move profile directory
+RUN mkdir -p /home/coder/.local/share/code-server
+RUN sudo chown -R coder:coder /home/coder/.local/share/code-server
+RUN mv /home/coder/code-server-setup/profile /home/coder/.local/share/code-server/User
+
+## Install extensions
+RUN mkdir -p /home/coder/.local/share/code-server/extensions
+RUN /home/coder/code-server-setup/install-remote-extensions.sh
+RUN /home/coder/code-server-setup/install-local-extensions.sh
 
 EXPOSE 22
 EXPOSE 80
