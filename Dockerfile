@@ -1,8 +1,14 @@
 FROM codercom/code-server
 
-ENV GIT_CONFIG_USERNAME coder
-ENV GIT_CONFIG_EMAIL coder@example.com
-ENV NODE_DEFAULT_VERSION 16
+ARG GIT_CONFIG_USERNAME=coder
+ARG GIT_CONFIG_EMAIL=coder@example.com
+ARG NODE_DEFAULT_VERSION=16
+ARG CODEBOX_NAME=codebox
+
+ENV GIT_CONFIG_USERNAME=${GIT_CONFIG_USERNAME}
+ENV GIT_CONFIG_EMAIL=${GIT_CONFIG_EMAIL}
+ENV NODE_DEFAULT_VERSION=${NODE_DEFAULT_VERSION}
+ENV CODEBOX_NAME=${CODEBOX_NAME}
 
 # Install dependencies
 
@@ -15,6 +21,7 @@ RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/inst
 # Replace oh-my-zsh theme
 COPY ./src/oh-my-zsh/robbyrussell-ssh.zsh-theme /home/coder/.oh-my-zsh/themes/
 RUN sed -i "s/ZSH_THEME=\"robbyrussell\"/if [[ -n \$SSH_CONNECTION ]]; then\n  ZSH_THEME=\"robbyrussell-ssh\"\nelse\n  ZSH_THEME=\"robbyrussell\"\nfi/" /home/coder/.zshrc
+RUN sed -i "s/{{CODEBOX_NAME}}/$CODEBOX_NAME/" /home/coder/.oh-my-zsh/themes/robbyrussell-ssh.zsh-theme
 
 # Add aliases
 COPY ./src/oh-my-zsh/user-configuration.sh /home/coder/.oh-my-zsh/user-configuration.sh
