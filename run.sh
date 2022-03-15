@@ -31,7 +31,9 @@ docker run -d --name $CONTAINER_NAME \
   -e GIT_CONFIG_USERNAME="homer0" \
   -e GIT_CONFIG_EMAIL="me@homer0.dev" \
   -e CODEBOX_NAME="codebox-test" \
+  -e CODESERVER_PROXY_DOMAIN="homer0.com" \
   -v $(pwd)/src/ssh:/home/coder/ssh-keys:ro \
+  -v $(pwd):/home/coder/code:rw \
   $IMAGE_NAME
 
 echo "=== Done"

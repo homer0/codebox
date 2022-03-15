@@ -4,6 +4,7 @@ ENV GIT_CONFIG_USERNAME="coder"
 ENV GIT_CONFIG_EMAIL="coder@example.com"
 ENV NODE_DEFAULT_VERSION="16"
 ENV CODEBOX_NAME="codebox"
+ENV CODESERVER_PROXY_DOMAIN=""
 
 # Install dependencies
 
@@ -22,7 +23,7 @@ RUN sed -i "s/{{CODEBOX_NAME}}/$CODEBOX_NAME/" /home/coder/.oh-my-zsh/themes/rob
 COPY ./src/oh-my-zsh/user-configuration.sh /home/coder/.oh-my-zsh/user-configuration.sh
 RUN sed -i "s/# User configuration/# User configuration\n\nsource \/home\/coder\/.oh-my-zsh\/user-configuration.sh/" /home/coder/.zshrc
 
-## nvm
+# nvm
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
 RUN chown -R coder:coder /home/coder/.nvm
 COPY ./src/nvm/nvm-config.sh /home/coder/.oh-my-zsh/nvm-config.sh
@@ -33,10 +34,16 @@ RUN sudo chown coder:coder /home/coder/.nvm-setup-version.sh
 RUN /home/coder/.nvm-setup-version.sh
 RUN rm /home/coder/.nvm-setup-version.sh
 
-## Entrypoint customization
+# Entrypoint customization
 COPY ./src/codebox-entrypoint.sh /usr/bin/codebox-entrypoint.sh
 RUN sudo chmod +x /usr/bin/codebox-entrypoint.sh
 RUN sudo sed -i 's/exec /\/usr\/bin\/codebox-entrypoint.sh\nexec /' /usr/bin/entrypoint.sh
+
+# Customize execution command
+COPY ./src/command-overwrite.sh /home/coder/command-overwrite.sh
+RUN sudo chmod +x /home/coder/command-overwrite.sh
+RUN sudo /home/coder/command-overwrite.sh
+RUN rm /home/coder/command-overwrite.sh
 
 # Configure GIT
 COPY ./src/git/.gitconfig /home/coder/.gitconfig
@@ -70,12 +77,16 @@ RUN sudo chown -R coder:coder /home/coder/.local/share/code-server
 RUN mv /home/coder/code-server-setup/profile /home/coder/.local/share/code-server/User
 
 ## Install extensions
-RUN mkdir -p /home/coder/.local/share/code-server/extensions
 RUN /home/coder/code-server-setup/install-remote-extensions.sh
 RUN /home/coder/code-server-setup/install-local-extensions.sh
 
 ## Remove setup directory
 RUN rm -rf /home/coder/code-server-setup
+
+# Utilities script
+COPY ./src/utils /home/coder/utils
+RUN sudo chown -R coder:coder /home/coder/utils
+RUN sudo chmod +x /home/coder/utils/*.sh
 
 EXPOSE 22
 EXPOSE 80
