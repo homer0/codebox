@@ -1,14 +1,9 @@
 FROM codercom/code-server
 
-ARG GIT_CONFIG_USERNAME=coder
-ARG GIT_CONFIG_EMAIL=coder@example.com
-ARG NODE_DEFAULT_VERSION=16
-ARG CODEBOX_NAME=codebox
-
-ENV GIT_CONFIG_USERNAME=${GIT_CONFIG_USERNAME}
-ENV GIT_CONFIG_EMAIL=${GIT_CONFIG_EMAIL}
-ENV NODE_DEFAULT_VERSION=${NODE_DEFAULT_VERSION}
-ENV CODEBOX_NAME=${CODEBOX_NAME}
+ENV GIT_CONFIG_USERNAME="coder"
+ENV GIT_CONFIG_EMAIL="coder@example.com"
+ENV NODE_DEFAULT_VERSION="16"
+ENV CODEBOX_NAME="codebox"
 
 # Install dependencies
 
@@ -38,10 +33,13 @@ RUN sudo chown coder:coder /home/coder/.nvm-setup-version.sh
 RUN /home/coder/.nvm-setup-version.sh
 RUN rm /home/coder/.nvm-setup-version.sh
 
+## Entrypoint customization
+COPY ./src/codebox-entrypoint.sh /usr/bin/codebox-entrypoint.sh
+RUN sudo chmod +x /usr/bin/codebox-entrypoint.sh
+RUN sudo sed -i 's/exec /\/usr\/bin\/codebox-entrypoint.sh\nexec /' /usr/bin/entrypoint.sh
+
 # Configure GIT
 COPY ./src/git/.gitconfig /home/coder/.gitconfig
-RUN sed -i "s/{{GIT_CONFIG_USERNAME}}/$GIT_CONFIG_USERNAME/" /home/coder/.gitconfig
-RUN sed -i "s/{{GIT_CONFIG_EMAIL}}/$GIT_CONFIG_EMAIL/" /home/coder/.gitconfig
 COPY ./src/git/.gitignore_global /home/coder/.gitignore_global
 
 # Fix locales
@@ -56,20 +54,11 @@ RUN sudo chsh -s $(which zsh)
 RUN sudo usermod -s $(which zsh) coder
 
 # Setup SSH
-RUN mkdir -p /home/coder/.ssh
-COPY ./src/ssh/id_rsa /home/coder/.ssh/id_rsa
-COPY ./src/ssh/id_rsa.pub /home/coder/.ssh/id_rsa.pub
-COPY ./src/ssh/id_rsa.pub /home/coder/.ssh/authorized_keys
-RUN sudo chown -R coder:coder /home/coder/.ssh
-RUN sudo chmod -R 700 /home/coder/.ssh
 RUN sudo sed -i "s/#PasswordAuthentication yes/PasswordAuthentication no/" /etc/ssh/sshd_config
 RUN sudo sed -i "s/UsePAM yes/UsePAM no/" /etc/ssh/sshd_config
-RUN sudo service ssh restart
-RUN sudo sed -i 's/exec /sudo service ssh restart\nexec /' /usr/bin/entrypoint.sh
 
 # Setup nginx
 COPY ./src/nginx/default-site /etc/nginx/sites-available/default
-RUN sudo sed -i 's/exec /sudo service nginx restart\nexec /' /usr/bin/entrypoint.sh
 
 # Setup code-server
 COPY ./src/code-server /home/coder/code-server-setup
@@ -84,6 +73,9 @@ RUN mv /home/coder/code-server-setup/profile /home/coder/.local/share/code-serve
 RUN mkdir -p /home/coder/.local/share/code-server/extensions
 RUN /home/coder/code-server-setup/install-remote-extensions.sh
 RUN /home/coder/code-server-setup/install-local-extensions.sh
+
+## Remove setup directory
+RUN rm -rf /home/coder/code-server-setup
 
 EXPOSE 22
 EXPOSE 80

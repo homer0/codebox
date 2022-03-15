@@ -15,6 +15,4 @@ setupNodeVersion() {
 setupNodeVersion 16
 setupNodeVersion 14
 setupNodeVersion 12
-nvm alias default $NODE_DEFAULT_VERSION
-echo $NODE_DEFAULT_VERSION > ~/.nvmrc
-nvm use
+

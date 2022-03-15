@@ -20,17 +20,19 @@ fi
 
 # BUILD IMAGE
 echo "=== Build image $IMAGE_NAME"
-docker build -t $IMAGE_NAME \
-  --build-arg GIT_CONFIG_USERNAME="homer0" \
-  --build-arg GIT_CONFIG_EMAIL="me@homer0.dev" \
-  --build-arg CODEBOX_NAME="codebox-test" \
-  .
+docker build -t $IMAGE_NAME .
 
 # CREATE CONTAINER
 echo "=== Create container $CONTAINER_NAME"
 docker run -d --name $CONTAINER_NAME \
   -p 4522:22 \
   -p 4580:80 \
+  -p 6580:8080 \
+  -e GIT_CONFIG_USERNAME="homer0" \
+  -e GIT_CONFIG_EMAIL="me@homer0.dev" \
+  -e CODEBOX_NAME="codebox-test" \
+  -v $(pwd)/src/ssh:/home/coder/ssh-keys:ro \
   $IMAGE_NAME
 
 echo "=== Done"
+
