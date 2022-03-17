@@ -1,0 +1,19 @@
+{
+  "name": "codebox",
+  "version": "1.0.0",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/homer0/codebox.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "engineStrict": true,
+  "engines": {
+    "node": ">=16"
+  },
+  "dependencies": {
+    "yaml": "^1.10.2"
+  }
+}

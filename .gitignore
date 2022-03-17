@@ -1,1 +1,3 @@
 src/ssh/id_rsa*
+/node_modules
+_x-*
