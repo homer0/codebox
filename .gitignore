@@ -1,3 +1,7 @@
-src/ssh/id_rsa*
+id_rsa*
 /node_modules
+/.vscode
+.DS_Store
+npm-debug.log
+yarn-error.log
 _x-*
