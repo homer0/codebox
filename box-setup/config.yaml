@@ -1,0 +1,29 @@
+name: codebox-test
+code-server:
+  proxy-domain: homer0.com
+  proxy-domain-ssl: true
+  hashed-password: 584428bdac29487f8a8066f5f162e19cb7ae268f44f7c240043b75b39d83c7e7
+vscode:
+  extensions:
+    # Atom Keymap
+    - ms-vscode.atom-keybindings
+    # Beautify
+    - HookyQR.beautify
+    # CodeSnap
+    - adpyke.codesnap
+    # EditorConfig for VS Code
+    - EditorConfig.EditorConfig
+    # EJS language support
+    - DigitalBrainstem.javascript-ejs-support
+    # ESLint
+    - dbaeumer.vscode-eslint
+    # file-icons
+    - file-icons.file-icons
+    # Sass
+    - syler.sass-indented
+    # Svelte for VS Code
+    - svelte.svelte-vscode
+git:
+  username: homer0
+  email: me@homer0.dev
+
