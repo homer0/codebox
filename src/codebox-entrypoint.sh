@@ -2,34 +2,33 @@
 
 . ~/.zshrc
 
-echo $(node -e "console.log(process.env)") >> ~/.debug-entry.log
-
 # Git configuration
-GIT_USERNAME="${GIT_CONFIG_USERNAME:-coder}"
-GIT_EMAIL="${GIT_CONFIG_EMAIL:-coder@example.com}"
+GIT_USERNAME=$(codeboxcli get-setting git.username)
+GIT_EMAIL=$(codeboxcli get-setting git.email)
 
 sed -i "s/{{GIT_CONFIG_USERNAME}}/$GIT_CONFIG_USERNAME/" ~/.gitconfig
 sed -i "s/{{GIT_CONFIG_EMAIL}}/$GIT_CONFIG_EMAIL/" ~/.gitconfig
 
 # Validate SSH keys directory
-if [ ! -d "/home/coder/ssh-keys" ]; then
-  echo "No .ssh directory found, you need to mount it in /home/coder/ssh-keys"
+if [ "$(codeboxcli has ssh-keys)" = "false" ]; then
+  echo "No 'ssh-keys' folder found on your setup directory"
   exit 1
 fi
 
 # Update SSH keys permissions
-cp -R ~/ssh-keys ~/.ssh
+SSH_KEYS_PATH=$(codeboxcli get-path ssh-keys)
+cp -R "$SSH_KEYS_PATH" ~/.ssh
 chmod 0700 ~/.ssh && \
   chmod 600 ~/.ssh/id_rsa && \
   chmod 600 ~/.ssh/id_rsa.pub && \
   cp ~/.ssh/id_rsa.pub ~/.ssh/authorized_keys
 
 # Update oh-my-zsh theme
-THEME_CODEBOX_NAME="${CODEBOX_NAME:-codebox}"
+THEME_CODEBOX_NAME=$(codeboxcli get-setting name)
 sed -i "s/{{CODEBOX_NAME}}/$THEME_CODEBOX_NAME/" ~/.oh-my-zsh/themes/robbyrussell-ssh.zsh-theme
 
 # Set Node default version
-NODE_VERSION="${NODE_DEFAULT_VERSION:-16}"
+NODE_VERSION=$(codeboxcli get-setting node.default-version)
 nvm alias default $NODE_VERSION
 echo $NODE_VERSION > ~/.nvmrc
 nvm use
