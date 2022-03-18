@@ -33,8 +33,15 @@ nvm alias default $NODE_VERSION
 echo $NODE_VERSION > ~/.nvmrc
 nvm use
 
+# Write code-server config
+CODE_SERVER_CONFIG=$(codeboxcli get-code-server-config --yaml)
+mkdir -p ~/.config/code-server
+echo "$CODE_SERVER_CONFIG" > ~/.config/code-server/config.yaml
+cat ~/.config/code-server/config.yaml
+
 # Restart SSH service
 sudo service ssh restart
 
 # Restart nginx service
 sudo service nginx restart
+
