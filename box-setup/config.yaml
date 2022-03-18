@@ -1,7 +1,7 @@
 name: codebox-test
 code-server:
   proxy-domain: homer0.com
-  proxy-domain-ssl: true
+  ssl: true
   hashed-password: 584428bdac29487f8a8066f5f162e19cb7ae268f44f7c240043b75b39d83c7e7
 vscode:
   extensions:
