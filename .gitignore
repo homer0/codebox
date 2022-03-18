@@ -1,6 +1,7 @@
 id_rsa*
 /node_modules
 /.vscode
+/.mount
 .DS_Store
 npm-debug.log
 yarn-error.log
