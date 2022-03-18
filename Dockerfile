@@ -1,11 +1,5 @@
 FROM codercom/code-server
 
-ENV GIT_CONFIG_USERNAME="coder"
-ENV GIT_CONFIG_EMAIL="coder@example.com"
-ENV NODE_DEFAULT_VERSION="16"
-ENV CODEBOX_NAME="codebox"
-ENV CODESERVER_PROXY_DOMAIN=""
-
 # Install dependencies
 
 ## apt packages
@@ -67,26 +61,15 @@ RUN sudo sed -i "s/UsePAM yes/UsePAM no/" /etc/ssh/sshd_config
 # Setup nginx
 COPY ./src/nginx/default-site /etc/nginx/sites-available/default
 
-# Setup code-server
-COPY ./src/code-server /home/coder/code-server-setup
-RUN sudo chown -R coder:coder /home/coder/code-server-setup
-
-## Move profile directory
-RUN mkdir -p /home/coder/.local/share/code-server
-RUN sudo chown -R coder:coder /home/coder/.local/share/code-server
-RUN mv /home/coder/code-server-setup/profile /home/coder/.local/share/code-server/User
-
-## Install extensions
-RUN /home/coder/code-server-setup/install-remote-extensions.sh
-RUN /home/coder/code-server-setup/install-local-extensions.sh
-
-## Remove setup directory
-RUN rm -rf /home/coder/code-server-setup
-
-# Utilities script
-COPY ./src/utils /home/coder/utils
-RUN sudo chown -R coder:coder /home/coder/utils
-RUN sudo chmod +x /home/coder/utils/*.sh
+# Setup CLI
+RUN mkdir -p /home/coder/.codebox/cli
+COPY ./src/cli /home/coder/.codebox/cli
+COPY ./.nvmrc /home/coder/.codebox/cli/
+COPY ./package.json /home/coder/.codebox/cli/
+COPY ./package-lock.json /home/coder/.codebox/cli/
+RUN echo "export CODEBOX_CLI_PATH=/home/coder/.codebox/cli" >> /home/coder/.zshrc
+RUN /home/coder/.codebox/cli/install.sh
+RUN sudo ln -s /home/coder/.codebox/cli/bin.sh /usr/bin/codeboxcli
 
 EXPOSE 22
 EXPOSE 80
