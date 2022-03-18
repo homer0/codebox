@@ -6,6 +6,9 @@ exports.JSON_INDENT = 2;
 
 exports.DEFAULT_CODEBOX_CONFIG = {
   name: 'codebox',
+  node: {
+    'default-version': 16,
+  },
   'code-server': {},
   vscode: {},
   git: {
@@ -20,8 +23,8 @@ exports.DEFAULT_CODESERVER_CONFIG = {
   cert: false,
 };
 
-// exports.BOX_SETUP_PATH = path.join('/', 'home', 'coder');
-exports.BOX_SETUP_PATH = path.join(process.cwd(), 'box-setup');
+exports.BOX_SETUP_PATH = path.join('/', 'home', 'coder', '.codebox', 'setup');
+// exports.BOX_SETUP_PATH = path.join(process.cwd(), 'box-setup');
 
 exports.BOX_SETUP_SUBPATHS = {
   config: 'config.yaml',
