@@ -9,12 +9,14 @@
   "keywords": [],
   "author": "",
   "license": "MIT",
+  "main": "src/index.js",
   "engineStrict": true,
   "engines": {
     "node": ">=16"
   },
   "dependencies": {
-    "extend": "^3.0.2",
+    "fs-extra": "^10.0.1",
+    "wootils": "^5.0.1",
     "yaml": "^1.10.2",
     "yargs": "^17.3.1"
   },
