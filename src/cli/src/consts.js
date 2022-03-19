@@ -24,7 +24,6 @@ exports.DEFAULT_CODESERVER_CONFIG = {
 };
 
 exports.BOX_SETUP_PATH = path.join('/', 'home', 'coder', '.codebox', 'setup');
-// exports.BOX_SETUP_PATH = path.join(process.cwd(), 'box-setup');
 
 exports.BOX_SETUP_SUBPATHS = {
   config: 'config.yaml',
