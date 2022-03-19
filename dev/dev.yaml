@@ -1,0 +1,13 @@
+names:
+  container: codebox-container
+  image: codebox
+ports:
+  http: 4580
+  https: 4581
+  ssh: 4522
+  code-server: 6580
+mount:
+  config: /config
+  profile: /profile
+  setup: /dev/box
+  code: /

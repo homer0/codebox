@@ -43,6 +43,14 @@
     "prepare": "is-ci || husky install",
     "lint": "lint-staged",
     "lint:all": "eslint ./ --ext .js",
-    "test": "echo \"lol\""
+    "test": "echo \"lol\"",
+    "dev:setting": "./dev/scripts/settings.js",
+    "dev:container:delete": "./dev/scripts/container-delete.sh",
+    "predev:container:create": "npm run dev:container:delete",
+    "dev:container:create": "./dev/scripts/container-create.sh",
+    "dev:image:delete": "./dev/scripts/image-delete.sh",
+    "predev:image:build": "npm run dev:image:delete",
+    "dev:image:build": "./dev/scripts/image-build.sh",
+    "dev:all": "npm run dev:container:delete && npm run dev:image:build && npm run dev:container:create"
   }
 }

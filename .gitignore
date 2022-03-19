@@ -2,6 +2,7 @@ id_rsa*
 /node_modules
 /.vscode
 /.mount
+/.codebox-mount
 .DS_Store
 npm-debug.log
 yarn-error.log
