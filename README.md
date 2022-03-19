@@ -79,7 +79,7 @@ setup
 
 Since you'll me mounting the profile directory too, codebox will only copy the `settings.json` and/or `keybindings.json` if they don't exist already, so you don't need to worry about overwriting them whenever you restart the container.
 
-## 🚀 Features
+## 🚀 Other features
 
 ### 🌎 nginx
 
@@ -91,5 +91,18 @@ And if you are working with features that require `HTTPS`, even though you'll ge
 
 ### 💻 oh-my-zsh
 
-TBC
+The container installs and configures [oh-my-zsh](https://ohmyz.sh) as a shell. A special detail is that, when you connect via ssh, it uses a different theme that includes the box name as a prefix, other than that, is the default setup.
+
+### 🧩 nvm
+
+This was originally thought to be a Node development environment, so the container installs [nvm](https://github.com/nvm-sh/nvm), and setups the current LTS versions.
+
+## 🗂 Volumes
+
+| Name | Path | Access | Description |
+| ---- | ---- | ------ | ----------- |
+| Setup | `/home/coder/.codebox/setup` | RO | The setup directory, that contains the SSH keys and the configuration. |
+| Profile | `/home/coder/.local/share/code-server` | RW | The VSCode profile directory, where all configurations and settings are stored. |
+| Config | `/home/coder/.config` | RW | Where the code-server configuration is stored |
+| Code | `/home/coder/code` | RW | The directory where you'll create your projects. |
 
