@@ -57,13 +57,6 @@
   "typescript.preferences.importModuleSpecifier": "relative",
   "explorer.confirmDelete": false,
   "editor.inlineSuggest.enabled": true,
-  "github.copilot.enable": {
-    "*": true,
-    "yaml": true,
-    "plaintext": true,
-    "markdown": true,
-    "javascript": true
-  },
   "typescript.inlayHints.parameterNames.enabled": "none",
   "editor.bracketPairColorization.enabled": false,
   "svelte.ask-to-enable-ts-plugin": false,
