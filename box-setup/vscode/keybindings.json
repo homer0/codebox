@@ -1,0 +1,95 @@
+[
+  {
+      "key": "alt+cmd+2",
+      "command": "workbench.action.terminal.split",
+      "when": "terminalFocus"
+  },
+  {
+      "key": "cmd+\\",
+      "command": "-workbench.action.terminal.split",
+      "when": "terminalFocus"
+  },
+  {
+      "key": "alt+cmd+2",
+      "command": "workbench.action.splitEditor"
+  },
+  {
+      "key": "cmd+\\",
+      "command": "-workbench.action.splitEditor"
+  },
+  {
+      "key": "cmd+\\",
+      "command": "workbench.action.toggleSidebarVisibility"
+  },
+  {
+      "key": "cmd+b",
+      "command": "-workbench.action.toggleSidebarVisibility"
+  },
+  {
+      "key": "shift+cmd+\\",
+      "command": "-editor.action.jumpToBracket",
+      "when": "editorTextFocus"
+  },
+  {
+      "key": "shift+cmd+\\",
+      "command": "workbench.action.toggleActivityBarVisibility"
+  },
+  {
+      "key": "cmd+2",
+      "command": "-workbench.action.openEditorAtIndex2"
+  },
+  {
+      "key": "cmd+1",
+      "command": "-workbench.action.openEditorAtIndex1"
+  },
+  {
+      "key": "ctrl+r",
+      "command": "-workbench.action.openRecent"
+  },
+  {
+      "key": "ctrl+r",
+      "command": "-workbench.action.quickOpenNavigateNextInRecentFilesPicker",
+      "when": "inQuickOpen && inRecentFilesPicker"
+  },
+  {
+      "key": "cmd+r",
+      "command": "workbench.action.gotoSymbol"
+  },
+{
+      "key": "f5",
+      "command": "-workbench.action.debug.start",
+      "when": "!inDebugMode"
+  },
+{
+    "key": "ctrl+shift+t",
+    "command": "workbench.action.terminal.focus"
+},
+{
+    "key": "ctrl+shift+cmd+t",
+    "command": "workbench.action.terminal.kill"
+},
+{
+    "key": "pagedown",
+    "command": "workbench.action.terminal.scrollDownPage",
+    "when": "terminalFocus"
+},
+{
+    "key": "pageup",
+    "command": "workbench.action.terminal.scrollUpPage",
+    "when": "terminalFocus"
+},
+{
+    "key": "ctrl+r",
+    "command": "workbench.action.debug.start",
+    "when": "!inDebugMode && !terminalFocus"
+},
+{
+    "key": "cmd+r",
+    "command": "-workbench.action.reloadWindow",
+    "when": "isDevelopment"
+},
+{
+    "key": "ctrl+shift+.",
+    "command": "turboConsoleLog.displayLogMessage"
+}
+]

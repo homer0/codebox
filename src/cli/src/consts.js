@@ -31,4 +31,5 @@ exports.BOX_SETUP_SUBPATHS = {
   'ssh-keys': 'ssh-keys',
   'vscode.extensions': 'vscode/extensions',
   'vscode.settings': 'vscode/settings.json',
+  'vscode.keybindings': 'vscode/keybindings.json',
 };

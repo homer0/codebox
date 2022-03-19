@@ -59,6 +59,21 @@ else
   echo "=== no custom vscode user settings found"
 fi
 
+# Copy VSCode keybindings
+echo "== validating vscode user keybindings..."
+if [ "$(codeboxcli has vscode.keybindings)" = "true" ]; then
+  if [ ! -f "~/.local/share/code-server/User/keybindings.json" ]; then
+    VSCODE_SETUP_KEYBINDINGS_PATH=$(codeboxcli get-path vscode.keybindings)
+    mkdir -p ~/.local/share/code-server/User
+    cp "$VSCODE_SETUP_KEYBINDINGS_PATH" ~/.local/share/code-server/User/keybindings.json
+    echo "=== vscode user keybindings successfully copied"
+  else
+    echo "=== vscode user keybindings already exists"
+  fi
+else
+  echo "=== no custom vscode user keybindings found"
+fi
+
 echo "== validating vscode extensions..."
 VSCODE_REMOTE_EXTS=$(codeboxcli get-setting vscode.extensions -s)
 if [[ -n $VSCODE_REMOTE_EXTS ]]; then
