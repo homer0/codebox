@@ -50,7 +50,7 @@
   "files.insertFinalNewline": true,
   "eslint.validate": ["javascript", "javascriptreact", "svelte"],
   "workbench.sideBar.location": "right",
-  "svelte.language-server.runtime": "/Users/homer0/.nvm/versions/node/v12.21.0/bin/node",
+  "svelte.language-server.runtime": "/Users/homer0/.nvm/versions/node/v12.22.11/bin/node",
   "terminal.integrated.fontSize": 13,
   "debug.javascript.codelens.npmScripts": "never",
   "javascript.suggest.completeJSDocs": true,
