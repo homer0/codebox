@@ -35,9 +35,14 @@ nvm use
 
 # Write code-server config
 CODE_SERVER_CONFIG=$(codeboxcli get-code-server-config --yaml)
-mkdir -p ~/.config/code-server
-echo "$CODE_SERVER_CONFIG" > ~/.config/code-server/config.yaml
-cat ~/.config/code-server/config.yaml
+echo "== validating code-server config..."
+if [ ! -f "~/.config/code-server/config.yaml" ]; then
+  mkdir -p ~/.config/code-server
+  echo "$CODE_SERVER_CONFIG" > ~/.config/code-server/config.yaml
+  echo "=== code-server config successfully created"
+else
+  echo "=== code-server config already exists"
+fi
 
 # Restart SSH service
 sudo service ssh restart
