@@ -44,6 +44,21 @@ else
   echo "=== code-server config already exists"
 fi
 
+# Copy VSCode user settings
+echo "== validating vscode user settings..."
+if [ "$(codeboxcli has vscode.settings)" = "true" ]; then
+  if [ ! -f "~/.local/share/code-server/User/settings.json" ]; then
+    VSCODE_SETUP_USER_SETTINGS_PATH=$(codeboxcli get-path vscode.settings)
+    mkdir -p ~/.local/share/code-server/User
+    cp "$VSCODE_SETUP_USER_SETTINGS_PATH" ~/.local/share/code-server/User/settings.json
+    echo "=== vscode user settings successfully copied"
+  else
+    echo "=== vscode user settings already exists"
+  fi
+else
+  echo "=== no custom vscode user settings found"
+fi
+
 # Restart SSH service
 sudo service ssh restart
 
