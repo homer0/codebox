@@ -30,7 +30,7 @@ yargs(hideBin(process.argv))
       if (Array.isArray(setting) && argv['string-list']) {
         setting = fns.arrayToString(setting);
       }
-      console.log(setting);
+      console.log(typeof setting === 'undefined' ? '' : setting);
     },
   )
   .command(
