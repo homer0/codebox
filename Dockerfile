@@ -11,7 +11,6 @@ RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/inst
 # Replace oh-my-zsh theme
 COPY ./src/oh-my-zsh/robbyrussell-ssh.zsh-theme /home/coder/.oh-my-zsh/themes/
 RUN sed -i "s/ZSH_THEME=\"robbyrussell\"/if [[ -n \$SSH_CONNECTION ]]; then\n  ZSH_THEME=\"robbyrussell-ssh\"\nelse\n  ZSH_THEME=\"robbyrussell\"\nfi/" /home/coder/.zshrc
-RUN sed -i "s/{{CODEBOX_NAME}}/$CODEBOX_NAME/" /home/coder/.oh-my-zsh/themes/robbyrussell-ssh.zsh-theme
 
 # Add aliases
 COPY ./src/oh-my-zsh/user-configuration.sh /home/coder/.oh-my-zsh/user-configuration.sh
@@ -67,6 +66,7 @@ COPY ./src/cli /home/coder/.codebox/cli
 COPY ./.nvmrc /home/coder/.codebox/cli/
 COPY ./package.json /home/coder/.codebox/cli/
 COPY ./package-lock.json /home/coder/.codebox/cli/
+RUN sudo chown -R coder:coder /home/coder/.codebox/cli
 RUN echo "export CODEBOX_CLI_PATH=/home/coder/.codebox/cli" >> /home/coder/.zshrc
 RUN /home/coder/.codebox/cli/install.sh
 RUN sudo ln -s /home/coder/.codebox/cli/bin.sh /usr/bin/codeboxcli
