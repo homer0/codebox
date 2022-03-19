@@ -59,6 +59,35 @@ else
   echo "=== no custom vscode user settings found"
 fi
 
+echo "== validating vscode extensions..."
+VSCODE_REMOTE_EXTS=$(codeboxcli get-setting vscode.extensions -s)
+if [[ -n $VSCODE_REMOTE_EXTS ]]; then
+  echo "=== installing remote extensions..."
+  VSCODE_REMOTE_EXTS_LIST=($(echo $VSCODE_REMOTE_EXTS))
+  for ext in ${VSCODE_REMOTE_EXTS_LIST[@]}; do
+    code-server --install-extension "$ext"
+  done
+else
+  echo "=== no remote extensions found"
+fi
+
+HAS_VSCODE_LOCAL_EXTS=$(codeboxcli has vscode.extensions)
+if [ "$(codeboxcli has vscode.settings)" = "true" ]; then
+  VCODE_LOCAL_EXTS_PATH=$(codeboxcli get-path vscode.extensions)
+  VSCODE_LOCAL_EXTS=$(ls "$VCODE_LOCAL_EXTS_PATH")
+  if [[ -n $VSCODE_LOCAL_EXTS ]]; then
+    echo "=== installing local extensions..."
+    VSCODE_LOCAL_EXTS_LIST=($(echo $VSCODE_LOCAL_EXTS))
+    for ext in ${VSCODE_LOCAL_EXTS_LIST[@]}; do
+      code-server --install-extension "$VCODE_LOCAL_EXTS_PATH/$ext"
+    done
+  else
+    echo "=== no local extensions found"
+  fi
+else
+  echo "=== no local extensions found"
+fi
+
 # Restart SSH service
 sudo service ssh restart
 
