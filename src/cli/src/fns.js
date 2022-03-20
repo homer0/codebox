@@ -52,8 +52,6 @@ exports.getCodeServerConfig = async () => {
   return codeServerConfig;
 };
 
-exports.arrayToString = (array) => array.join('\n');
-
 exports.humanList = (array, lastSeparator = 'and') => {
   const lastItem = array.pop();
   const result = array.join(', ');

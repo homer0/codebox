@@ -1,9 +1,5 @@
 const path = require('path');
 
-exports.EMPTY_FN = () => {};
-
-exports.JSON_INDENT = 2;
-
 exports.DEFAULT_CODEBOX_CONFIG = {
   name: 'codebox',
   node: {

@@ -9,7 +9,7 @@ yargs(hideBin(process.argv))
   .command(
     'get-config',
     'Retrieves the codebox setup config',
-    consts.EMPTY_FN,
+    () => {},
     async () => {
       const config = await fns.getConfig();
       console.log(config);
@@ -28,7 +28,7 @@ yargs(hideBin(process.argv))
     async (argv) => {
       let setting = await fns.getSetting(argv.setting);
       if (Array.isArray(setting) && argv['string-list']) {
-        setting = fns.arrayToString(setting);
+        setting = setting.join('\n');
       }
       console.log(typeof setting === 'undefined' ? '' : setting);
     },
