@@ -19,7 +19,7 @@ jobs:
           node-version: '${{ steps.nvm.outputs.NVMRC }}'
       - name: Install dependencies
         run: npm ci
-      - run: npm run dev:image:create && npx semantic-release
+      - run: npm run dev:image:build && npx semantic-release
         env:
           DOCKER_PASSWORD: ${{ secrets.PACKAGE_TOKEN }}
           DOCKER_USER: homer0
