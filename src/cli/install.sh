@@ -9,4 +9,4 @@ cd "$DIRPATH"
 # Switch to the required Node version.
 nvm use
 # Install the dependencies from the lock file.
-npm ci
+npm ci --production
