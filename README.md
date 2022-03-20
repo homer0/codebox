@@ -4,7 +4,7 @@ An image based on [code-server](https://hub.docker.com/r/codercom/code-server) w
 
 ## ⚠️ Disclaimer
 
-I suck at Docker and Bash, so some of the code may be a bit messy, and it may not follow the best practices. This project is my excuse to learn about both things.
+I suck at Docker and Bash, so, some of the code may be a bit messy, and it may not follow the best practices. This project is my excuse to learn about both things.
 
 ## 🍿 Usage
 
@@ -19,7 +19,7 @@ setup
     └── id_rsa.pub
 ```
 
-When the container runs, those keys will be copied to the `.ssh` directory, with the required permissions, and used so you can connect via SSH.
+When the container runs, those keys will be copied to the `.ssh` directory, with the required permissions, and used, so you can connect via SSH.
 
 ### ⚙️ Configuration
 
@@ -79,6 +79,24 @@ setup
 
 Since you'll me mounting the profile directory too, codebox will only copy the `settings.json` and/or `keybindings.json` if they don't exist already, so you don't need to worry about overwriting them whenever you restart the container.
 
+## 🗂 Volumes
+
+| Path | Access | Description |
+| ---- | ------ | ----------- |
+| `/home/coder/.codebox/setup` | RO | The setup directory, that contains the SSH keys and the configuration. |
+| `/home/coder/.local/share/code-server` | RW | The VSCode profile directory, where all configurations and settings are stored. |
+| `/home/coder/.config` | RW | Where the code-server configuration is stored |
+| `/home/coder/code` | RW | The directory where you'll create your projects. |
+
+## 🚦 Ports
+
+| Number | Description |
+| ------ | ----------- |
+| `80`   | For the nginx reverse proxy |
+| `443`  | For the nginx reverse proxy (SSL) |
+| `22`   | For the SSH connection |
+| `8080` | For the code-server |
+
 ## 🚀 Other features
 
 ### 🌎 nginx
@@ -91,18 +109,100 @@ And if you are working with features that require `HTTPS`, even though you'll ge
 
 ### 💻 oh-my-zsh
 
-The container installs and configures [oh-my-zsh](https://ohmyz.sh) as a shell. A special detail is that, when you connect via ssh, it uses a different theme that includes the box name as a prefix, other than that, is the default setup.
+The container installs and configures [oh-my-zsh](https://ohmyz.sh) as a shell. A special detail is that, when you connect via SSH, it uses a different theme that includes the box name as a prefix, other than that, is the default setup.
 
 ### 🧩 nvm
 
 This was originally thought to be a Node development environment, so the container installs [nvm](https://github.com/nvm-sh/nvm), and setups the current LTS versions.
 
-## 🗂 Volumes
+## 🤘 Development
 
-| Name | Path | Access | Description |
-| ---- | ---- | ------ | ----------- |
-| Setup | `/home/coder/.codebox/setup` | RO | The setup directory, that contains the SSH keys and the configuration. |
-| Profile | `/home/coder/.local/share/code-server` | RW | The VSCode profile directory, where all configurations and settings are stored. |
-| Config | `/home/coder/.config` | RW | Where the code-server configuration is stored |
-| Code | `/home/coder/code` | RW | The directory where you'll create your projects. |
+Inside the `src` directory, you'll find everything that's needed to build the image (besides the `Dockerfile` in the root), and in the `dev` directory, the tools to run customize and run the container.
 
+Now, if you look at the repository, it seems like a JS app, due to the `package.json`, `.eslintrc`, `.nvmrc`, etc; but most of those things are meant for the CLI app that runs inside the container, and that's in charge of configuring the setup. Then, the scripts of the `package.json` also allow you to build/delete the image, and create/delete the container.
+
+### 🤖 Scripts
+
+When the image is created, the `package.json` and the `package-lock.json` are both copied in to the same directory as `src/cli`, but while developing the image, you install the dependencies and use the scripts:
+
+```bash
+# Set the Node version
+nvm install
+# Install the dependencies
+npm install
+
+# -----
+
+# You can manually create the image and run the container...
+
+# Build the image, after deleting the container if it was running, and any previous
+# version of the image, if it existed.
+npm run dev:image:build
+# Run the container, after deleting the previous version of the container if it
+# was running.
+npm run dev:container:run
+
+# -----
+
+# Or use a single script that does both things...
+npm run dev:all
+```
+
+### 🛠 Dev configuration
+
+Inside the `dev` directory, you'll find a `dev.yaml` file that contains the configuration that the scripts use to build the image and run the container:
+
+```yaml
+names:
+  container: codebox-container
+  image: codebox
+ports:
+  # 80
+  http: 4580
+  # 443
+  https: 4581
+  # 22
+  ssh: 4522
+  # 8080
+  code-server: 6580
+paths:
+  # The mount paths are relative to $PWD/.codebox-mount
+  mount:
+    config: /config
+    profile: /profile
+  # The rest of the path are relative to $PWD
+  setup: /dev/box
+  code: /
+```
+
+## 👾 What comes next?
+
+~~You've been freed~~Yes, one of the motivations of this project was for me to learn some Docker and Bash, but ultimately, it's something I want in order to run it in my local network and be able to code from my tablet, so, I plan to keep working on it and adding stuff as I may need them.
+
+My objective is not to create something that you would deploy "to production", with multiple users, and amazing performance, but just to have an environment where you can code and play with it, without the need of your computer.
+
+For now, this is my _wishlist_:
+
+### Better organization of the CLI app
+
+This thing with the `package*` files in the root, but then moved to the CLI folder, is a bit of a mess, and if you don't read this doc, is not intuitive.
+
+### Custom configuration for oh-my-zsh
+
+Right now, it copies a few of my aliases, and that's all, but it would be great (and not complicated at all), to put some `.sh` file in the setup directory, and then include it in the `.zshrc` file.
+
+### Custom configuration for .git
+
+Just like oh-my-zsh, it could have a custom `.gitconfig` file in the setup directory, and use it to replace the one inside the container.
+
+### oh-my-zsh custom theme
+
+By default, it uses `oh-my-zsh` default theme, `robbyrussell`, and when you connect via SSH, a modified version of it. But, if you want to use a different theme, you could add something like `codebox-theme` and/or `codebox-theme-ssh` in the setup directory, for the container to use.
+
+### Better entrypoint
+
+The thing I'm doing with the entrypoint is not messy, it's **dark AF**: I use `sed` to inject the execution of a bash file before code-server is started... and then, I used `sed` again to replace the execution of code-server in order to support custom domains.
+
+### nginx sites
+
+By default, nginx is only used for the `/go/$PORT` reverse proxy, but it wouldn't be very complicated to be able to copy a site definition (or multiple) from the setup directory. It could even generate an SSL certificate (self-signed) and exposed on a volume, so the host machine can trust it.
