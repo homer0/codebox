@@ -2,6 +2,8 @@
 
 . ~/.zshrc
 
+# Install a specific version of Node with nvm, and add some basic packages
+# as global.
 setupNodeVersion() {
   nvm install $1
 
@@ -12,6 +14,7 @@ setupNodeVersion() {
   njt\
 }
 
+# Install the current LTS versions
 setupNodeVersion 16
 setupNodeVersion 14
 setupNodeVersion 12
