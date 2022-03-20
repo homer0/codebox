@@ -2,6 +2,8 @@
 
 An image based on [code-server](https://hub.docker.com/r/codercom/code-server) with some extra features.
 
+With code-server, you get a browser based VSCode, and this image adds SSH support, oh-my-zsh, nvm, nginx reverse proxy to access ports other than `80` and `443`, and a few more features.
+
 ## ⚠️ Disclaimer
 
 I suck at Docker and Bash, so, some of the code may be a bit messy, and it may not follow the best practices. This project is my excuse to learn about both things.
