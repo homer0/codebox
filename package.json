@@ -46,11 +46,12 @@
     "test": "echo \"lol\"",
     "dev:setting": "./dev/scripts/settings.js",
     "dev:container:delete": "./dev/scripts/container-delete.sh",
-    "predev:container:create": "npm run dev:container:delete",
-    "dev:container:create": "./dev/scripts/container-create.sh",
+    "predev:container:run": "npm run dev:container:delete",
+    "dev:container:run": "./dev/scripts/container-run.sh",
+    "predev:image:delete": "npm run dev:container:delete",
     "dev:image:delete": "./dev/scripts/image-delete.sh",
     "predev:image:build": "npm run dev:image:delete",
     "dev:image:build": "./dev/scripts/image-build.sh",
-    "dev:all": "npm run dev:container:delete && npm run dev:image:build && npm run dev:container:create"
+    "dev:all": "npm run dev:image:build && npm run dev:container:run"
   }
 }

@@ -10,10 +10,10 @@ HTTPS_PORT=$(getsetting ports.https)
 CODE_SERVER_PORT=$(getsetting ports.code-server)
 PWD=$(pwd)
 MOUNT_PATH="$PWD/.codebox-mount"
-CONFIG_PATH="$MOUNT_PATH$(getsetting mount.config)"
-PROFILE_PATH="$MOUNT_PATH$(getsetting mount.profile)"
-SETUP_PATH="$PWD$(getsetting mount.setup)"
-CODE_PATH="$PWD$(getsetting mount.code)"
+CONFIG_PATH="$MOUNT_PATH$(getsetting paths.mount.config)"
+PROFILE_PATH="$MOUNT_PATH$(getsetting paths.mount.profile)"
+SETUP_PATH="$PWD$(getsetting paths.setup)"
+CODE_PATH="$PWD$(getsetting paths.code)"
 
 echo "=== Cleaning mount paths..."
 rm -rf "$MOUNT_PATH"
