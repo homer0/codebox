@@ -44,7 +44,7 @@
     ]
   },
   "scripts": {
-    "prepare": "is-ci || husky install",
+    "prepare": "[ \"$NODE_ENV\" = production ] && exit 0; is-ci || husky install",
     "lint": "lint-staged",
     "lint:all": "eslint ./ --ext .js",
     "test": "echo \"lol\"",
