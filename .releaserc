@@ -1,0 +1,25 @@
+{
+  "tagFormat": "${version}",
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    "@semantic-release/changelog",
+    "@semantic-release/git",
+    [
+      "@eclass/semantic-release-docker",
+      {
+        "baseImageName": "codebox",
+        "registries": [
+          {
+            "url": "docker.pkg.github.com",
+            "imageName": "docker.pkg.github.com/homer0/codebox/codebox",
+            "user": "GITHUB_USER",
+            "password": "GITHUB_TOKEN"
+          }
+        ],
+        "additionalTags": ["next", "beta"]
+      }
+    ]
+  ],
+  "branches": ["main"]
+}

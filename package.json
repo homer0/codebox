@@ -18,18 +18,22 @@
     "fs-extra": "^10.0.1",
     "wootils": "^5.0.1",
     "yaml": "^1.10.2",
-    "yargs": "^17.3.1"
+    "yargs": "^17.4.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.2.3",
     "@commitlint/config-conventional": "^16.2.1",
+    "@eclass/semantic-release-docker": "^3.0.0",
     "@homer0/eslint-plugin": "^9.0.0",
     "@homer0/prettier-config": "^1.1.1",
+    "@semantic-release/changelog": "^6.0.1",
+    "@semantic-release/git": "^10.0.1",
     "eslint": "^8.11.0",
     "husky": "^7.0.4",
     "is-ci": "^3.0.1",
-    "lint-staged": "^12.3.6",
-    "prettier": "^2.6.0"
+    "lint-staged": "^12.3.7",
+    "prettier": "^2.6.0",
+    "semantic-release": "^19.0.2"
   },
   "lint-staged": {
     "*.js": ["eslint", "prettier --write"]
