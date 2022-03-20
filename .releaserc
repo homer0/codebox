@@ -13,8 +13,8 @@
           {
             "url": "docker.pkg.github.com",
             "imageName": "docker.pkg.github.com/homer0/codebox/codebox",
-            "user": "GITHUB_USER",
-            "password": "GITHUB_TOKEN"
+            "user": "DOCKER_USER",
+            "password": "DOCKER_PASSWORD"
           }
         ],
         "additionalTags": ["next", "beta"]
