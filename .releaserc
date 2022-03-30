@@ -16,8 +16,7 @@
             "user": "DOCKER_USER",
             "password": "DOCKER_PASSWORD"
           }
-        ],
-        "additionalTags": ["next", "beta"]
+        ]
       }
     ]
   ],
