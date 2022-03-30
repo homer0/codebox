@@ -3,8 +3,8 @@
 . ~/.zshrc
 
 # Git configuration
-GIT_USERNAME=$(codeboxcli get-setting git.username)
-GIT_EMAIL=$(codeboxcli get-setting git.email)
+GIT_CONFIG_USERNAME=$(codeboxcli get-setting git.username)
+GIT_CONFIG_EMAIL=$(codeboxcli get-setting git.email)
 
 sed -i "s/{{GIT_CONFIG_USERNAME}}/$GIT_CONFIG_USERNAME/" ~/.gitconfig
 sed -i "s/{{GIT_CONFIG_EMAIL}}/$GIT_CONFIG_EMAIL/" ~/.gitconfig
