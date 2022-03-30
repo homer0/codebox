@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/homer0/codebox/compare/1.0.0...1.0.1) (2022-03-30)
+
+
+### Bug Fixes
+
+* apply the git user data ([247391e](https://github.com/homer0/codebox/commit/247391e3d5e7cee297dbf1f2401236869fb1462b))
+
 # 1.0.0 (2022-03-20)
 
 
