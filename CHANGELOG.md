@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/homer0/codebox/compare/1.0.1...1.0.2) (2022-03-30)
+
+
+### Bug Fixes
+
+* debug the docker release ([a020036](https://github.com/homer0/codebox/commit/a02003631f83d416f5b4c264009d6df1fc67d8c1))
+
 ## [1.0.1](https://github.com/homer0/codebox/compare/1.0.0...1.0.1) (2022-03-30)
 
 
