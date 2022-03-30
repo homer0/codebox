@@ -17,6 +17,8 @@ vscode:
     - DigitalBrainstem.javascript-ejs-support
     # ESLint
     - dbaeumer.vscode-eslint
+    # Prettier
+    - esbenp.prettier-vscode
     # file-icons
     - file-icons.file-icons
     # Sass
