@@ -15,25 +15,25 @@
     "node": ">=16"
   },
   "dependencies": {
-    "fs-extra": "^10.0.1",
+    "fs-extra": "^10.1.0",
     "wootils": "^5.0.1",
-    "yaml": "^1.10.2",
-    "yargs": "^17.4.0"
+    "yaml": "^2.1.1",
+    "yargs": "^17.5.1"
   },
   "devDependencies": {
-    "@commitlint/cli": "^16.2.3",
-    "@commitlint/config-conventional": "^16.2.1",
+    "@commitlint/cli": "^17.0.3",
+    "@commitlint/config-conventional": "^17.0.3",
     "@eclass/semantic-release-docker": "^3.0.0",
-    "@homer0/eslint-plugin": "^9.0.0",
-    "@homer0/prettier-config": "^1.1.1",
+    "@homer0/eslint-plugin": "^9.1.1",
+    "@homer0/prettier-config": "^1.1.2",
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/git": "^10.0.1",
-    "eslint": "^8.11.0",
-    "husky": "^7.0.4",
+    "eslint": "^8.19.0",
+    "husky": "^8.0.1",
     "is-ci": "^3.0.1",
-    "lint-staged": "^12.3.7",
-    "prettier": "^2.6.0",
-    "semantic-release": "^19.0.2"
+    "lint-staged": "^13.0.3",
+    "prettier": "^2.7.1",
+    "semantic-release": "^19.0.3"
   },
   "lint-staged": {
     "*.js": ["eslint", "prettier --write"]
