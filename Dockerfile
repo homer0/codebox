@@ -30,7 +30,7 @@ RUN rm /home/coder/.nvm-setup-version.sh
 # Entrypoint customization
 COPY ./src/codebox-entrypoint.sh /usr/bin/codebox-entrypoint.sh
 RUN sudo chmod +x /usr/bin/codebox-entrypoint.sh
-RUN sudo sed -i 's/exec /\/usr\/bin\/codebox-entrypoint.sh\nexec /' /usr/bin/entrypoint.sh
+RUN sudo sed -i 's/exec dumb/\/usr\/bin\/codebox-entrypoint.sh\nexec dumb/' /usr/bin/entrypoint.sh
 
 # Customize execution command
 COPY ./src/command-overwrite.sh /home/coder/command-overwrite.sh
