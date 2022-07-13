@@ -1,3 +1,19 @@
+# [1.1.0](https://github.com/homer0/codebox/compare/1.0.2...1.1.0) (2022-07-13)
+
+
+### Bug Fixes
+
+* add missing dockerignore ([bf563da](https://github.com/homer0/codebox/commit/bf563da90964bfd932b4f81ec91c28233353ea65))
+* change replace logic for the entrypoint ([90bcb78](https://github.com/homer0/codebox/commit/90bcb7896bfb07800c5ea06d82b0f8adcbde2984))
+* remove Node 12 from nvm ([a5cf31e](https://github.com/homer0/codebox/commit/a5cf31e396bee2cf24f42e5ec5adac7d87fb7ba7))
+* upgrade vsx files for the dev box ([4a2f86c](https://github.com/homer0/codebox/commit/4a2f86c7526f080ad18c965894715054e41d54f7))
+* use ENTRYPOINTD ([20ff072](https://github.com/homer0/codebox/commit/20ff07291c7cac2bafce2a17c3221a4b6e7c4842))
+
+
+### Features
+
+* add support for custom icons ([5975f2d](https://github.com/homer0/codebox/commit/5975f2db7b6d50fd07da7818cf4e658a487913d2))
+
 ## [1.0.2](https://github.com/homer0/codebox/compare/1.0.1...1.0.2) (2022-03-30)
 
 
