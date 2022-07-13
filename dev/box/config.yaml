@@ -1,4 +1,5 @@
 name: codebox-test
+icon: acid
 code-server:
   proxy-domain: homer0.com
   # codebox$

@@ -60,6 +60,9 @@ RUN sudo sed -i "s/UsePAM yes/UsePAM no/" /etc/ssh/sshd_config
 # Setup nginx
 COPY ./src/nginx/default-site /etc/nginx/sites-available/default
 
+# Add VS Code icons
+COPY ./src/vscode/icons /usr/lib/code-server/src/browser/media/codebox-icons
+
 # Setup CLI
 RUN mkdir -p /home/coder/.codebox/cli
 COPY ./src/cli /home/coder/.codebox/cli
