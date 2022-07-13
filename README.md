@@ -28,8 +28,11 @@ When the container runs, those keys will be copied to the `.ssh` directory, with
 You can also create a `config.yaml` in the setup directory in order to customize the different options available:
 
 ```yaml
-# The name that shows up in the terminal when you SSH into it
+# The name that shows up in the terminal when you SSH into it, and the suggested
+# name to install on iOS.
 name: my-codebox
+# The icon style to use, one of: default, dark, insiders, sublime, lilac, or acid.
+icon: dark
 # Specific options for code-server
 code-server:
   # If you reverse proxy it trough a subdomain, like `codebox.homer0.com`, you

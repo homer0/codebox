@@ -6,6 +6,7 @@ const path = require('path');
  */
 exports.DEFAULT_CODEBOX_CONFIG = {
   name: 'codebox',
+  icon: 'dark',
   node: {
     'default-version': 16,
   },
