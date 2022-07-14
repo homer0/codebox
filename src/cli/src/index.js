@@ -53,6 +53,16 @@ yargs(hideBin(process.argv))
     },
   )
   .command(
+    'get-pwa-manifest',
+    'Retrieves the custom manifest for using the app as a PWA',
+    () => {},
+    async () => {
+      const config = await fns.getPWAManifest();
+      const indent = 2;
+      console.log(JSON.stringify(config, null, indent));
+    },
+  )
+  .command(
     'has [resource]',
     'Checks if a resource is present',
     (yarg) =>

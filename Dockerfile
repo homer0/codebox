@@ -50,6 +50,9 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 RUN echo "# Locales\n\nexport LC_ALL=$LC_ALL\nexport LANGUAGE=$LANGUAGE\nexport LANG=$LANG\n" >> /home/coder/.zshrc
 
+# Change permissions for the PWA setup
+RUN sudo chmod 0755 /usr/lib/code-server/out/node/routes/vscode.js
+
 # Replace shell
 RUN sudo chsh -s $(which zsh)
 RUN sudo usermod -s $(which zsh) coder

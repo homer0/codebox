@@ -82,6 +82,27 @@ exports.getCodeServerConfig = async () => {
   return codeServerConfig;
 };
 /**
+ * Generates the PWA manifest for the box, based on the box configuration.
+ */
+exports.getPWAManifest = async () => {
+  const { name, icon, description } = await exports.getConfig();
+  const pwaMnifest = ObjectUtils.merge(consts.DEFAULT_PWA_MANIFEST, {
+    name,
+    short_name: name,
+    description: description || consts.DEFAULT_PWA_MANIFEST.description,
+  });
+  const iconPath = `{{BASE}}/_static/src/browser/media/codebox-icons/${icon}`;
+  // eslint-disable-next-line no-magic-numbers
+  pwaMnifest.icons = [192, 256, 384, 512, 1024].map((size) => ({
+    src: `${iconPath}/icon-${size}.png`,
+    type: 'image/png',
+    sizes: `${size}x${size}`,
+    purpose: 'maskable',
+  }));
+
+  return pwaMnifest;
+};
+/**
  * Transforms an array of words into a human-readable sentence, by adding
  * a comma between each world, and a separator between the last two words.
  *
