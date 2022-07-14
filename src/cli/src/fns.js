@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs-extra');
-const ObjectUtils = require('wootils/shared/objectUtils');
+const { merge, get } = require('@homer0/object-utils');
 const yaml = require('yaml');
 const consts = require('./consts');
 /**
@@ -44,7 +44,7 @@ exports.getConfig = async () => {
     config = {};
   }
 
-  return ObjectUtils.merge(consts.DEFAULT_CODEBOX_CONFIG, config);
+  return merge(consts.DEFAULT_CODEBOX_CONFIG, config);
 };
 /**
  * Gets the value of a single setting fromthe box configuration.
@@ -55,7 +55,7 @@ exports.getConfig = async () => {
  */
 exports.getSetting = async (setting) => {
   const config = await exports.getConfig();
-  return ObjectUtils.get(config, setting);
+  return get({ target: config, path: setting });
 };
 /**
  * Calculates and returns the code-server configuration based on the box
@@ -65,10 +65,7 @@ exports.getSetting = async (setting) => {
  */
 exports.getCodeServerConfig = async () => {
   const config = await exports.getConfig();
-  const codeServerConfig = ObjectUtils.merge(
-    consts.DEFAULT_CODESERVER_CONFIG,
-    config['code-server'],
-  );
+  const codeServerConfig = merge(consts.DEFAULT_CODESERVER_CONFIG, config['code-server']);
   if (!codeServerConfig.password && !codeServerConfig['hashed-password']) {
     codeServerConfig.password = exports.getRandomString();
   }
@@ -80,6 +77,27 @@ exports.getCodeServerConfig = async () => {
   }
 
   return codeServerConfig;
+};
+/**
+ * Generates the PWA manifest for the box, based on the box configuration.
+ */
+exports.getPWAManifest = async () => {
+  const { name, icon, description } = await exports.getConfig();
+  const pwaMnifest = merge(consts.DEFAULT_PWA_MANIFEST, {
+    name,
+    short_name: name,
+    description: description || consts.DEFAULT_PWA_MANIFEST.description,
+  });
+  const iconPath = `{{BASE}}/_static/src/browser/media/codebox-icons/${icon}`;
+  // eslint-disable-next-line no-magic-numbers
+  pwaMnifest.icons = [192, 256, 384, 512, 1024].map((size) => ({
+    src: `${iconPath}/icon-${size}.png`,
+    type: 'image/png',
+    sizes: `${size}x${size}`,
+    purpose: 'maskable',
+  }));
+
+  return pwaMnifest;
 };
 /**
  * Transforms an array of words into a human-readable sentence, by adding

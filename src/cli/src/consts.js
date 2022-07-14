@@ -6,6 +6,7 @@ const path = require('path');
  */
 exports.DEFAULT_CODEBOX_CONFIG = {
   name: 'codebox',
+  description: '',
   icon: 'dark',
   node: {
     'default-version': 16,
@@ -26,6 +27,19 @@ exports.DEFAULT_CODESERVER_CONFIG = {
   'bind-addr': '127.0.0.1:8080',
   auth: 'password',
   cert: false,
+};
+/**
+ * The default values for the PWA manifest. This configuration is generated
+ * based on the codebox configuration, that's why things like the icons are
+ * not defined.
+ */
+exports.DEFAULT_PWA_MANIFEST = {
+  name: 'codebox',
+  short_name: 'codebox',
+  start_url: '.',
+  display: 'fullscreen',
+  description: 'Development box',
+  icons: [],
 };
 /**
  * The path where the setup directory is mounted in the container.

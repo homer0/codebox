@@ -2,10 +2,10 @@ names:
   container: codebox-container
   image: codebox
 ports:
-  http: 4580
-  https: 4581
-  ssh: 4522
-  code-server: 6580
+  http: 5580
+  https: 5581
+  ssh: 5522
+  code-server: 6581
 paths:
   mount:
     config: /config

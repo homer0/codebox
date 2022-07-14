@@ -122,6 +122,15 @@ sudo sed -i "/<link rel=\"icon\"/d" $TPL
 sudo sed -i "/<link rel=\"alternate icon\"/d" $TPL
 sudo sed -i "/<meta name=\"apple-mobile-web-app-title\"/d" $TPL
 sudo sed -i "s/<\/head>/$NEW_TAGS/" $TPL
+PWA_MANIFEST=$(codeboxcli get-pwa-manifest | sed 's/\//\\\//g' | tr '\n' '\f')
+PWA_CODE="(req, JSON.stringify(${PWA_MANIFEST}, null, 2))"
+VSCODE_ROUTES="/usr/lib/code-server/out/node/routes/vscode.js"
+VSCODE_TMP_FILE="/home/coder/_tmp-routes.js"
+NEW_VSCODE_ROUTES=$(cat $VSCODE_ROUTES | tr '\n' '\f' | sed -e "s/(req,\ JSON\.stringify(.*,\ null,\ 2))/${PWA_CODE}/" | tr '\f' '\n')
+touch $VSCODE_TMP_FILE
+echo "$NEW_VSCODE_ROUTES" > $VSCODE_TMP_FILE
+sudo mv $VSCODE_TMP_FILE $VSCODE_ROUTES
+
 
 # Restart SSH service
 sudo service ssh restart
