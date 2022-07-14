@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs-extra');
-const ObjectUtils = require('wootils/shared/objectUtils');
+const { merge, get } = require('@homer0/object-utils');
 const yaml = require('yaml');
 const consts = require('./consts');
 /**
@@ -44,7 +44,7 @@ exports.getConfig = async () => {
     config = {};
   }
 
-  return ObjectUtils.merge(consts.DEFAULT_CODEBOX_CONFIG, config);
+  return merge(consts.DEFAULT_CODEBOX_CONFIG, config);
 };
 /**
  * Gets the value of a single setting fromthe box configuration.
@@ -55,7 +55,7 @@ exports.getConfig = async () => {
  */
 exports.getSetting = async (setting) => {
   const config = await exports.getConfig();
-  return ObjectUtils.get(config, setting);
+  return get({ target: config, path: setting });
 };
 /**
  * Calculates and returns the code-server configuration based on the box
@@ -65,10 +65,7 @@ exports.getSetting = async (setting) => {
  */
 exports.getCodeServerConfig = async () => {
   const config = await exports.getConfig();
-  const codeServerConfig = ObjectUtils.merge(
-    consts.DEFAULT_CODESERVER_CONFIG,
-    config['code-server'],
-  );
+  const codeServerConfig = merge(consts.DEFAULT_CODESERVER_CONFIG, config['code-server']);
   if (!codeServerConfig.password && !codeServerConfig['hashed-password']) {
     codeServerConfig.password = exports.getRandomString();
   }
@@ -86,7 +83,7 @@ exports.getCodeServerConfig = async () => {
  */
 exports.getPWAManifest = async () => {
   const { name, icon, description } = await exports.getConfig();
-  const pwaMnifest = ObjectUtils.merge(consts.DEFAULT_PWA_MANIFEST, {
+  const pwaMnifest = merge(consts.DEFAULT_PWA_MANIFEST, {
     name,
     short_name: name,
     description: description || consts.DEFAULT_PWA_MANIFEST.description,

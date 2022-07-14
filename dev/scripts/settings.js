@@ -2,7 +2,7 @@
 
 const path = require('path');
 const YAML = require('yaml');
-const ObjectUtils = require('wootils/shared/objectUtils');
+const { get } = require('@homer0/object-utils');
 const fs = require('fs-extra');
 
 (async () => {
@@ -13,7 +13,10 @@ const fs = require('fs-extra');
   const settingsPath = path.join(process.cwd(), 'dev', 'dev.yaml');
   const settings = await fs.readFile(settingsPath, 'utf8');
   const parsedSettings = YAML.parse(settings);
-  const settingValue = ObjectUtils.get(parsedSettings, setting);
+  const settingValue = get({
+    target: parsedSettings,
+    path: setting,
+  });
   if (typeof settingValue === 'undefined') {
     throw new Error(`No setting found for ${setting}`);
   }
