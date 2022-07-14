@@ -1,3 +1,11 @@
+## [1.1.1](https://github.com/homer0/codebox/compare/1.1.0...1.1.1) (2022-07-14)
+
+
+### Bug Fixes
+
+* change pwa manifest ([73929cc](https://github.com/homer0/codebox/commit/73929ccd480bf93e2f40f80219b992173d1c3a99))
+* stop using wootils ([20d252a](https://github.com/homer0/codebox/commit/20d252a5e9cde1963260de58a6e295e85389ba0c))
+
 # [1.1.0](https://github.com/homer0/codebox/compare/1.0.2...1.1.0) (2022-07-13)
 
 
