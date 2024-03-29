@@ -14,11 +14,13 @@
             "url": "docker.pkg.github.com",
             "imageName": "docker.pkg.github.com/homer0/codebox/codebox",
             "user": "DOCKER_USER",
-            "password": "DOCKER_PASSWORD"
+            "password": "GITHUB_TOKEN"
           }
         ]
       }
     ]
   ],
-  "branches": ["main"]
+  "branches": [
+    "main"
+  ]
 }
