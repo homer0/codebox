@@ -72,7 +72,7 @@ RUN mkdir -p /home/coder/.codebox/cli
 COPY ./src/cli /home/coder/.codebox/cli
 COPY ./.nvmrc /home/coder/.codebox/cli/
 COPY ./package.json /home/coder/.codebox/cli/
-COPY ./package-lock.json /home/coder/.codebox/cli/
+COPY ./pnpm-lock.yaml /home/coder/.codebox/cli/
 RUN sudo chown -R coder:coder /home/coder/.codebox/cli
 RUN echo "export CODEBOX_CLI_PATH=/home/coder/.codebox/cli" >> /home/coder/.zshrc
 RUN /home/coder/.codebox/cli/install.sh

@@ -128,7 +128,7 @@ Now, if you look at the repository, it seems like a JS app, due to the `package.
 
 ### 🤖 Scripts
 
-When the image is created, the `package.json` and the `package-lock.json` are both copied in to the same directory as `src/cli`, but while developing the image, you install the dependencies and use the scripts:
+When the image is created, the `package.json` and the `pnpm-lock.yaml` are both copied in to the same directory as `src/cli`, but while developing the image, you install the dependencies and use the scripts:
 
 ```bash
 # Set the Node version
