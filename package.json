@@ -12,7 +12,7 @@
   "main": "src/index.js",
   "engineStrict": true,
   "engines": {
-    "node": ">=16"
+    "node": ">=20"
   },
   "dependencies": {
     "@homer0/object-utils": "^1.0.1",
