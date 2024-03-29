@@ -16,6 +16,6 @@ setupNodeVersion() {
 }
 
 # Install the current LTS versions
-setupNodeVersion 16
-setupNodeVersion 14
+setupNodeVersion 18
+setupNodeVersion 20
 
