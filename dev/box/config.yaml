@@ -1,7 +1,7 @@
 name: codebox-test
 icon: acid
 code-server:
-  proxy-domain: homer0.com
+  proxy-domain: home.homer0.dev
   # codebox$
   hashed-password: 64aad9f2edfd5658acc3929b840bf0dd64c374a2edd85ee71ec78eafb30740b9
 vscode:
