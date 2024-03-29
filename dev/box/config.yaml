@@ -26,6 +26,10 @@ vscode:
     - syler.sass-indented
     # Svelte for VS Code
     - svelte.svelte-vscode
+    # Prisma
+    - Prisma.prisma
+    # Version Lens
+    - pflannery.vscode-versionlens
 git:
   username: homer0
   email: me@homer0.dev
