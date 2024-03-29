@@ -11,6 +11,19 @@
 
 * Node 14 and 16 were removed from the box
 
+# [2.0.0](https://github.com/homer0/codebox/compare/1.1.1...2.0.0) (2024-03-29)
+
+
+### Bug Fixes
+
+* ensure prod env before installing deps ([0711eed](https://github.com/homer0/codebox/commit/0711eedd7c9b2be8e76a084de8dd9ae36c101c4c))
+* update base Node versions to 18 and 20 ([1aa3a1a](https://github.com/homer0/codebox/commit/1aa3a1ab15fdc5215d4781b1ee01ff80888976a2))
+
+
+### BREAKING CHANGES
+
+* Node 14 and 16 were removed from the box
+
 ## [1.1.1](https://github.com/homer0/codebox/compare/1.1.0...1.1.1) (2022-07-14)
 
 
