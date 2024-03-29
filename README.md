@@ -134,7 +134,7 @@ When the image is created, the `package.json` and the `package-lock.json` are bo
 # Set the Node version
 nvm install
 # Install the dependencies
-npm install
+pnpm install
 
 # -----
 
@@ -142,15 +142,15 @@ npm install
 
 # Build the image, after deleting the container if it was running, and any previous
 # version of the image, if it existed.
-npm run dev:image:build
+pnpm run dev:image:build
 # Run the container, after deleting the previous version of the container if it
 # was running.
-npm run dev:container:run
+pnpm run dev:container:run
 
 # -----
 
 # Or use a single script that does both things...
-npm run dev:all
+pnpm run dev:all
 ```
 
 ### 🛠 Dev configuration

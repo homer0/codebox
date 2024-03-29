@@ -11,6 +11,7 @@ setupNodeVersion() {
   vercel\
   diff-so-fancy\
   yarn\
+  pnpm\
   njt\
 }
 
