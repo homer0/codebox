@@ -1,5 +1,5 @@
 #!/bin/sh
 
 getsetting(){
-  npm run --silent dev:setting $@
+  pnpm run --silent dev:setting $@
 }

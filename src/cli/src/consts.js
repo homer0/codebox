@@ -9,7 +9,7 @@ exports.DEFAULT_CODEBOX_CONFIG = {
   description: '',
   icon: 'dark',
   node: {
-    'default-version': 16,
+    'default-version': 20,
   },
   'code-server': {},
   vscode: {},

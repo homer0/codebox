@@ -11,10 +11,11 @@ setupNodeVersion() {
   vercel\
   diff-so-fancy\
   yarn\
+  pnpm\
   njt\
 }
 
 # Install the current LTS versions
-setupNodeVersion 16
-setupNodeVersion 14
+setupNodeVersion 18
+setupNodeVersion 20
 

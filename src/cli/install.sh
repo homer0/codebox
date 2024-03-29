@@ -9,4 +9,4 @@ cd "$DIRPATH"
 # Switch to the required Node version.
 nvm use
 # Install the dependencies from the lock file.
-npm ci --production
+NODE_ENV=production pnpm install --frozen-lockfile --prod
