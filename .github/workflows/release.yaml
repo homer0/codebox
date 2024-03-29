@@ -19,7 +19,7 @@ jobs:
           node-version: '${{ steps.nvm.outputs.NVMRC }}'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - run: pnpm run dev:image:build && ./fix-release.sh && pnpm exec semantic-release
+      - run: pnpm run dev:image:build && pnpm exec semantic-release
         env:
           DOCKER_PASSWORD: ${{ secrets.PACKAGE_TOKEN }}
           DOCKER_USER: homer0
