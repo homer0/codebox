@@ -87,13 +87,5 @@
     "key": "cmd+r",
     "command": "-workbench.action.reloadWindow",
     "when": "isDevelopment"
-  },
-  {
-    "key": "shift+cmd+g",
-    "command": "workbench.panel.chat.view.copilot.focus"
-  },
-  {
-    "key": "ctrl+shift+cmd+g",
-    "command": "workbench.action.openChat.copilot"
   }
 ]
