@@ -59,7 +59,6 @@ RUN sudo usermod -s $(which zsh) coder
 
 # Setup SSH
 RUN sudo sed -i "s/#PasswordAuthentication yes/PasswordAuthentication no/" /etc/ssh/sshd_config
-RUN sudo sed -i "s/UsePAM yes/UsePAM no/" /etc/ssh/sshd_config
 
 # Setup nginx
 COPY ./src/nginx/default-site /etc/nginx/sites-available/default
