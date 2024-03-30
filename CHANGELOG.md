@@ -1,3 +1,10 @@
+## [2.0.2](https://github.com/homer0/codebox/compare/2.0.1...2.0.2) (2024-03-30)
+
+
+### Bug Fixes
+
+* install ngrok ([b952e04](https://github.com/homer0/codebox/commit/b952e04a6259405e7dedc113657e61005af01935))
+
 ## [2.0.1](https://github.com/homer0/codebox/compare/2.0.0...2.0.1) (2024-03-30)
 
 
