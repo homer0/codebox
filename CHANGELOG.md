@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/homer0/codebox/compare/2.0.0...2.0.1) (2024-03-30)
+
+
+### Bug Fixes
+
+* enable PAM to fix SSH ([7508258](https://github.com/homer0/codebox/commit/75082583146a2910aa9534928ade807d23b4a138))
+
 # [2.0.0](https://github.com/homer0/codebox/compare/1.1.1...2.0.0) (2024-03-29)
 
 
