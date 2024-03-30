@@ -1,4 +1,4 @@
-name: codebox-test
+name: codebox-dev
 icon: acid
 code-server:
   proxy-domain: home.homer0.dev
