@@ -5,6 +5,11 @@ FROM codercom/code-server
 ## apt packages
 RUN sudo apt update && sudo apt install openssh-server nginx locales-all -y
 
+## ngrok (copied from https://dashboard.ngrok.com/get-started/setup/linux)
+RUN curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
+  | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
+  | sudo tee /etc/apt/sources.list.d/ngrok.list && sudo apt update && sudo apt install ngrok
+
 ## oh-my-zsh
 RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
