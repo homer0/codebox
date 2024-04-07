@@ -1,3 +1,10 @@
+## [2.0.3](https://github.com/homer0/codebox/compare/2.0.2...2.0.3) (2024-04-07)
+
+
+### Bug Fixes
+
+* update all dependencies ([b71d152](https://github.com/homer0/codebox/commit/b71d152885d72798626f7843346f3685112e3e02))
+
 ## [2.0.2](https://github.com/homer0/codebox/compare/2.0.1...2.0.2) (2024-03-30)
 
 
