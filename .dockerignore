@@ -1,1 +1,7 @@
 .DS_Store
+
+# Key material is mounted at runtime and must never enter the Docker build context.
+dev/box/ssh-keys/*
+!dev/box/ssh-keys/.keep
+src/ssh/*
+!src/ssh/.keep
