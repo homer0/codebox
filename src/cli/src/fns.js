@@ -1,8 +1,8 @@
-const path = require('path');
-const fs = require('fs-extra');
-const { merge, get } = require('@homer0/object-utils');
-const yaml = require('yaml');
-const consts = require('./consts');
+import path from 'path';
+import fs from 'fs-extra';
+import { merge, get } from '@homer0/object-utils';
+import yaml from 'yaml';
+import * as consts from './consts.js';
 /**
  * Gets the absolute path for known path in the box setup directory.
  *
@@ -12,7 +12,7 @@ const consts = require('./consts');
  *                           directory.
  * @returns {string}
  */
-exports.getPath = (subpath = null) => {
+export const getPath = (subpath = null) => {
   let result = consts.BOX_SETUP_PATH;
   if (subpath) {
     result = path.join(result, consts.BOX_SETUP_SUBPATHS[subpath]);
@@ -27,18 +27,18 @@ exports.getPath = (subpath = null) => {
  *                           `BOX_SETUP_SUBPATHS` constant.
  * @returns {Promise<boolean>}
  */
-exports.subpathExists = (subpath) => fs.pathExists(exports.getPath(subpath));
+export const subpathExists = (subpath) => fs.pathExists(getPath(subpath));
 /**
  * Gets the box configuration, using the `DEFAULT_BOX_CONFIG` constant as a
  * base.
  *
  * @returns {Promise<object>}
  */
-exports.getConfig = async () => {
+export const getConfig = async () => {
   let config;
-  const configExists = await exports.subpathExists('config');
+  const configExists = await subpathExists('config');
   if (configExists) {
-    const configFile = await fs.readFile(exports.getPath('config'), 'utf8');
+    const configFile = await fs.readFile(getPath('config'), 'utf8');
     config = yaml.parse(configFile);
   } else {
     config = {};
@@ -53,25 +53,42 @@ exports.getConfig = async () => {
  *                          `node.default-version`.
  * @returns {Promise<*>}
  */
-exports.getSetting = async (setting) => {
-  const config = await exports.getConfig();
+export const getSetting = async (setting) => {
+  const config = await getConfig();
   return get({ target: config, path: setting });
 };
+
+const DEFAULT_RANDOM_STR_LENGTH = 10;
+/**
+ * Generates a random string of the specified length.
+ *
+ * @param {number} [length=10] The length the string.
+ * @returns {string}
+ */
+export const getRandomString = (length = DEFAULT_RANDOM_STR_LENGTH) => {
+  const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  while (result.length < length) {
+    result += charset.charAt(Math.floor(Math.random() * charset.length));
+  }
+
+  return result;
+};
+
 /**
  * Calculates and returns the code-server configuration based on the box
  * configuration.
  *
  * @returns {Promise<object>}
  */
-exports.getCodeServerConfig = async () => {
-  const config = await exports.getConfig();
+export const getCodeServerConfig = async () => {
+  const config = await getConfig();
   const codeServerConfig = merge(consts.DEFAULT_CODESERVER_CONFIG, config['code-server']);
   if (!codeServerConfig.password && !codeServerConfig['hashed-password']) {
-    codeServerConfig.password = exports.getRandomString();
+    codeServerConfig.password = getRandomString();
   }
   const { ssl } = codeServerConfig;
   delete codeServerConfig.ssl;
-  delete codeServerConfig['proxy-domain'];
   if (ssl) {
     codeServerConfig.cert = true;
   }
@@ -81,8 +98,8 @@ exports.getCodeServerConfig = async () => {
 /**
  * Generates the PWA manifest for the box, based on the box configuration.
  */
-exports.getPWAManifest = async () => {
-  const { name, icon, description } = await exports.getConfig();
+export const getPWAManifest = async () => {
+  const { name, icon, description } = await getConfig();
   const pwaMnifest = merge(consts.DEFAULT_PWA_MANIFEST, {
     name,
     short_name: name,
@@ -112,25 +129,8 @@ exports.getPWAManifest = async () => {
  *                                          two words.
  * @returns {string}
  */
-exports.humanList = (array, lastSeparator = 'and') => {
+export const humanList = (array, lastSeparator = 'and') => {
   const lastItem = array.pop();
   const result = array.join(', ');
   return result + (array.length > 0 ? `, ${lastSeparator} ` : '') + lastItem;
-};
-
-const DEFAULT_RANDOM_STR_LENGTH = 10;
-/**
- * Generates a random string of the specified length.
- *
- * @param {number} [length=10] The length the string.
- * @returns {string}
- */
-exports.getRandomString = (length = DEFAULT_RANDOM_STR_LENGTH) => {
-  const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = '';
-  while (result.length < length) {
-    result += charset.charAt(Math.floor(Math.random() * charset.length));
-  }
-
-  return result;
 };

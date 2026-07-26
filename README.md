@@ -2,7 +2,7 @@
 
 An image based on [code-server](https://hub.docker.com/r/codercom/code-server) with some extra features.
 
-With code-server, you get a browser based VSCode, and this image adds SSH support, oh-my-zsh, nvm, nginx reverse proxy to access ports other than `80` and `443`, and a few more features.
+With code-server, you get a browser based VSCode, and this image adds SSH support, oh-my-zsh, fnm, an nginx reverse proxy for custom ports, and a few more features.
 
 ## ⚠️ Disclaimer
 
@@ -98,7 +98,6 @@ Since you'll me mounting the profile directory too, codebox will only copy the `
 | Number | Description |
 | ------ | ----------- |
 | `80`   | For the nginx reverse proxy |
-| `443`  | For the nginx reverse proxy (SSL) |
 | `22`   | For the SSH connection |
 | `8080` | For the code-server |
 
@@ -110,21 +109,19 @@ The container also installs and configures [nginx](https://www.nginx.com) as a r
 
 Let's say you are exposing the port `80` as `8081`, and inside the container, you are running a Node server on port `3000` to try some stuff; you could access it via `http://localhost:8081/go/3000/my-path`.
 
-And if you are working with features that require `HTTPS`, even though you'll get the "insecure warning", if you bridge the container with its own IP, you could access the previous example with `https://[IP]/go/3000/my-path`.
-
 ### 💻 oh-my-zsh
 
 The container installs and configures [oh-my-zsh](https://ohmyz.sh) as a shell. A special detail is that, when you connect via SSH, it uses a different theme that includes the box name as a prefix, other than that, is the default setup.
 
-### 🧩 nvm
+### 🧩 fnm
 
-This was originally thought to be a Node development environment, so the container installs [nvm](https://github.com/nvm-sh/nvm), and setups the current LTS versions.
+This was originally thought to be a Node development environment, so the container installs [fnm](https://github.com/Schniz/fnm), and setups the current LTS versions.
 
 ## 🤘 Development
 
 Inside the `src` directory, you'll find everything that's needed to build the image (besides the `Dockerfile` in the root), and in the `dev` directory, the tools to run customize and run the container.
 
-Now, if you look at the repository, it seems like a JS app, due to the `package.json`, `.eslintrc`, `.nvmrc`, etc; but most of those things are meant for the CLI app that runs inside the container, and that's in charge of configuring the setup. Then, the scripts of the `package.json` also allow you to build/delete the image, and create/delete the container.
+Now, if you look at the repository, it seems like a JS app, due to the `package.json`, `.eslintrc`, `.node-version`, etc; but most of those things are meant for the CLI app that runs inside the container, and that's in charge of configuring the setup. Then, the scripts of the `package.json` also allow you to build/delete the image, and create/delete the container.
 
 ### 🤖 Scripts
 
@@ -132,7 +129,7 @@ When the image is created, the `package.json` and the `pnpm-lock.yaml` are both 
 
 ```bash
 # Set the Node version
-nvm install
+fnm install
 # Install the dependencies
 pnpm install
 
@@ -164,8 +161,6 @@ names:
 ports:
   # 80
   http: 4580
-  # 443
-  https: 4581
   # 22
   ssh: 4522
   # 8080

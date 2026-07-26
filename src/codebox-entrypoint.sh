@@ -2,6 +2,9 @@
 
 . ~/.zshrc
 
+# Generate missing host keys once per container; existing keys survive restarts.
+sudo ssh-keygen -A
+
 CODEBOX_NAME=$(codeboxcli get-setting name)
 
 # Git configuration
@@ -30,9 +33,18 @@ sed -i "s/{{CODEBOX_NAME}}/$CODEBOX_NAME/" ~/.oh-my-zsh/themes/robbyrussell-ssh.
 
 # Set Node default version
 NODE_VERSION=$(codeboxcli get-setting node.default-version)
-nvm alias default $NODE_VERSION
-echo $NODE_VERSION > ~/.nvmrc
-nvm use
+fnm default $NODE_VERSION
+echo $NODE_VERSION > ~/.node-version
+fnm use
+
+# Update ngrok
+ngrok update
+
+# Setup ngrok auth token if provided
+if [ -n "$NGROK_AUTH_TOKEN" ]; then
+  echo "== validating ngrok auth token..."
+  ngrok config add-authtoken "$NGROK_AUTH_TOKEN"
+fi
 
 # Write code-server config
 CODE_SERVER_CONFIG=$(codeboxcli get-code-server-config --yaml)
@@ -122,14 +134,11 @@ sudo sed -i "/<link rel=\"icon\"/d" $TPL
 sudo sed -i "/<link rel=\"alternate icon\"/d" $TPL
 sudo sed -i "/<meta name=\"apple-mobile-web-app-title\"/d" $TPL
 sudo sed -i "s/<\/head>/$NEW_TAGS/" $TPL
-PWA_MANIFEST=$(codeboxcli get-pwa-manifest | sed 's/\//\\\//g' | tr '\n' '\f')
-PWA_CODE="(req, JSON.stringify(${PWA_MANIFEST}, null, 2))"
+PWA_MANIFEST_PATH="/home/coder/_tmp-manifest.json"
 VSCODE_ROUTES="/usr/lib/code-server/out/node/routes/vscode.js"
-VSCODE_TMP_FILE="/home/coder/_tmp-routes.js"
-NEW_VSCODE_ROUTES=$(cat $VSCODE_ROUTES | tr '\n' '\f' | sed -e "s/(req,\ JSON\.stringify(.*,\ null,\ 2))/${PWA_CODE}/" | tr '\f' '\n')
-touch $VSCODE_TMP_FILE
-echo "$NEW_VSCODE_ROUTES" > $VSCODE_TMP_FILE
-sudo mv $VSCODE_TMP_FILE $VSCODE_ROUTES
+codeboxcli get-pwa-manifest > $PWA_MANIFEST_PATH
+sudo env PATH="$PATH" node /home/coder/entrypoint.d/patch-pwa-manifest.mjs $PWA_MANIFEST_PATH $VSCODE_ROUTES
+rm $PWA_MANIFEST_PATH
 
 
 # Restart SSH service

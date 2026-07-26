@@ -30,6 +30,10 @@ vscode:
     - Prisma.prisma
     # Version Lens
     - pflannery.vscode-versionlens
+    # Quokka
+    - WallabyJs.quokka-vscode
+    # Gremlins
+    - naterkane.gremlins
 git:
   username: homer0
   email: me@homer0.dev

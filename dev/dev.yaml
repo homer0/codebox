@@ -3,7 +3,6 @@ names:
   image: codebox
 ports:
   http: 5580
-  https: 5581
   ssh: 5522
   code-server: 6581
 paths:

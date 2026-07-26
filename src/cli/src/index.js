@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
-const yargs = require('yargs/yargs');
-const { hideBin } = require('yargs/helpers');
-const YAML = require('yaml');
-const consts = require('./consts');
-const fns = require('./fns');
+import yargs from 'yargs/yargs';
+import { hideBin } from 'yargs/helpers';
+import YAML from 'yaml';
+import * as consts from './consts.js';
+import * as fns from './fns.js';
 
 yargs(hideBin(process.argv))
   .command(

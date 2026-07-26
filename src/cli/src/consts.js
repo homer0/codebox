@@ -1,15 +1,15 @@
-const path = require('path');
+import path from 'path';
 
 /**
  * The default values for the box configuration. All of these values can be
  * overridden by a `config.yaml` in the setup directory.
  */
-exports.DEFAULT_CODEBOX_CONFIG = {
+export const DEFAULT_CODEBOX_CONFIG = {
   name: 'codebox',
   description: '',
   icon: 'dark',
   node: {
-    'default-version': 20,
+    'default-version': 24,
   },
   'code-server': {},
   vscode: {},
@@ -23,8 +23,8 @@ exports.DEFAULT_CODEBOX_CONFIG = {
  * is generated based on the codebox configuration, so this format is never
  * exposed to the setup.
  */
-exports.DEFAULT_CODESERVER_CONFIG = {
-  'bind-addr': '127.0.0.1:8080',
+export const DEFAULT_CODESERVER_CONFIG = {
+  'bind-addr': '0.0.0.0:8080',
   auth: 'password',
   cert: false,
 };
@@ -33,7 +33,7 @@ exports.DEFAULT_CODESERVER_CONFIG = {
  * based on the codebox configuration, that's why things like the icons are
  * not defined.
  */
-exports.DEFAULT_PWA_MANIFEST = {
+export const DEFAULT_PWA_MANIFEST = {
   name: 'codebox',
   short_name: 'codebox',
   start_url: '.',
@@ -44,11 +44,11 @@ exports.DEFAULT_PWA_MANIFEST = {
 /**
  * The path where the setup directory is mounted in the container.
  */
-exports.BOX_SETUP_PATH = path.join('/', 'home', 'coder', '.codebox', 'setup');
+export const BOX_SETUP_PATH = path.join('/', 'home', 'coder', '.codebox', 'setup');
 /**
  * A dictionary of the known (possible) paths inside the the setup directory.
  */
-exports.BOX_SETUP_SUBPATHS = {
+export const BOX_SETUP_SUBPATHS = {
   config: 'config.yaml',
   'ssh-keys': 'ssh-keys',
   'vscode.extensions': 'vscode/extensions',
