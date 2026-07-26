@@ -2,6 +2,9 @@
 
 . ~/.zshrc
 
+# Generate missing host keys once per container; existing keys survive restarts.
+sudo ssh-keygen -A
+
 CODEBOX_NAME=$(codeboxcli get-setting name)
 
 # Git configuration

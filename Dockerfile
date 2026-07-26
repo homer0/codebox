@@ -58,6 +58,7 @@ RUN sudo chsh -s $(which zsh)
 RUN sudo usermod -s $(which zsh) coder
 
 # Setup SSH
+RUN sudo rm -f /etc/ssh/ssh_host_*_key /etc/ssh/ssh_host_*_key.pub
 RUN sudo sed -i "s/#PasswordAuthentication yes/PasswordAuthentication no/" /etc/ssh/sshd_config
 
 # Setup nginx
