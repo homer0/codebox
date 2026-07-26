@@ -6,5 +6,6 @@ export default defineConfig([
     importUrl: import.meta.url,
     configs: ['node-with-prettier'],
     addTsParser: false,
+    esm: true,
   }),
 ]);
