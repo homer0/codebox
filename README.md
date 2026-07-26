@@ -2,7 +2,7 @@
 
 An image based on [code-server](https://hub.docker.com/r/codercom/code-server) with some extra features.
 
-With code-server, you get a browser based VSCode, and this image adds SSH support, oh-my-zsh, fnm, nginx reverse proxy to access ports other than `80` and `443`, and a few more features.
+With code-server, you get a browser based VSCode, and this image adds SSH support, oh-my-zsh, fnm, an nginx reverse proxy for custom ports, and a few more features.
 
 ## ⚠️ Disclaimer
 
@@ -98,7 +98,6 @@ Since you'll me mounting the profile directory too, codebox will only copy the `
 | Number | Description |
 | ------ | ----------- |
 | `80`   | For the nginx reverse proxy |
-| `443`  | For the nginx reverse proxy (SSL) |
 | `22`   | For the SSH connection |
 | `8080` | For the code-server |
 
@@ -109,8 +108,6 @@ Since you'll me mounting the profile directory too, codebox will only copy the `
 The container also installs and configures [nginx](https://www.nginx.com) as a reverse proxy for anything that could run in "custom port": going to `/go/[port]/[path]` on the container's `80` port, will be proxied to `:[port]/[path]`.
 
 Let's say you are exposing the port `80` as `8081`, and inside the container, you are running a Node server on port `3000` to try some stuff; you could access it via `http://localhost:8081/go/3000/my-path`.
-
-And if you are working with features that require `HTTPS`, even though you'll get the "insecure warning", if you bridge the container with its own IP, you could access the previous example with `https://[IP]/go/3000/my-path`.
 
 ### 💻 oh-my-zsh
 
@@ -164,8 +161,6 @@ names:
 ports:
   # 80
   http: 4580
-  # 443
-  https: 4581
   # 22
   ssh: 4522
   # 8080
