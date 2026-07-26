@@ -11,6 +11,9 @@ export const DEFAULT_CODEBOX_CONFIG = {
   node: {
     'default-version': 24,
   },
+  ssh: {
+    env: [],
+  },
   'code-server': {},
   vscode: {},
   git: {
