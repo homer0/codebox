@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-const path = require('path');
-const YAML = require('yaml');
-const { get } = require('@homer0/object-utils');
-const fs = require('fs-extra');
+import path from 'path';
+import YAML from 'yaml';
+import { get } from '@homer0/object-utils';
+import fs from 'fs-extra';
 
 (async () => {
   const setting = process.argv.slice().pop();

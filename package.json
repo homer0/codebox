@@ -9,6 +9,7 @@
   "keywords": [],
   "author": "",
   "license": "MIT",
+  "type": "module",
   "main": "src/index.js",
   "packageManager": "pnpm@11.17.0",
   "engineStrict": true,
