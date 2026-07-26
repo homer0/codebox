@@ -36,9 +36,9 @@ export const subpathExists = (subpath) => fs.pathExists(getPath(subpath));
  */
 export const getConfig = async () => {
   let config;
-  const configExists = await exports.subpathExists('config');
+  const configExists = await subpathExists('config');
   if (configExists) {
-    const configFile = await fs.readFile(exports.getPath('config'), 'utf8');
+    const configFile = await fs.readFile(getPath('config'), 'utf8');
     config = yaml.parse(configFile);
   } else {
     config = {};
@@ -57,6 +57,24 @@ export const getSetting = async (setting) => {
   const config = await getConfig();
   return get({ target: config, path: setting });
 };
+
+const DEFAULT_RANDOM_STR_LENGTH = 10;
+/**
+ * Generates a random string of the specified length.
+ *
+ * @param {number} [length=10] The length the string.
+ * @returns {string}
+ */
+export const getRandomString = (length = DEFAULT_RANDOM_STR_LENGTH) => {
+  const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  while (result.length < length) {
+    result += charset.charAt(Math.floor(Math.random() * charset.length));
+  }
+
+  return result;
+};
+
 /**
  * Calculates and returns the code-server configuration based on the box
  * configuration.
@@ -116,21 +134,4 @@ export const humanList = (array, lastSeparator = 'and') => {
   const lastItem = array.pop();
   const result = array.join(', ');
   return result + (array.length > 0 ? `, ${lastSeparator} ` : '') + lastItem;
-};
-
-const DEFAULT_RANDOM_STR_LENGTH = 10;
-/**
- * Generates a random string of the specified length.
- *
- * @param {number} [length=10] The length the string.
- * @returns {string}
- */
-export const getRandomString = (length = DEFAULT_RANDOM_STR_LENGTH) => {
-  const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = '';
-  while (result.length < length) {
-    result += charset.charAt(Math.floor(Math.random() * charset.length));
-  }
-
-  return result;
 };
