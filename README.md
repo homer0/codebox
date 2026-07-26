@@ -124,7 +124,7 @@ This was originally thought to be a Node development environment, so the contain
 
 Inside the `src` directory, you'll find everything that's needed to build the image (besides the `Dockerfile` in the root), and in the `dev` directory, the tools to run customize and run the container.
 
-Now, if you look at the repository, it seems like a JS app, due to the `package.json`, `.eslintrc`, `.nvmrc`, etc; but most of those things are meant for the CLI app that runs inside the container, and that's in charge of configuring the setup. Then, the scripts of the `package.json` also allow you to build/delete the image, and create/delete the container.
+Now, if you look at the repository, it seems like a JS app, due to the `package.json`, `.eslintrc`, `.node-version`, etc; but most of those things are meant for the CLI app that runs inside the container, and that's in charge of configuring the setup. Then, the scripts of the `package.json` also allow you to build/delete the image, and create/delete the container.
 
 ### 🤖 Scripts
 

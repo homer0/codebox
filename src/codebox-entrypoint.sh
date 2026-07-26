@@ -31,7 +31,7 @@ sed -i "s/{{CODEBOX_NAME}}/$CODEBOX_NAME/" ~/.oh-my-zsh/themes/robbyrussell-ssh.
 # Set Node default version
 NODE_VERSION=$(codeboxcli get-setting node.default-version)
 fnm default $NODE_VERSION
-echo $NODE_VERSION > ~/.fnmrc
+echo $NODE_VERSION > ~/.node-version
 fnm use
 
 # Update ngrok
