@@ -6,6 +6,7 @@
 # as global.
 setupNodeVersion() {
   fnm install $1
+  fnm use $1
 
   npm install --global\
   vercel\
