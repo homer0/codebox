@@ -2,8 +2,8 @@
 import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';
 import YAML from 'yaml';
-import * as consts from './consts';
-import * as fns from './fns';
+import * as consts from './consts.js';
+import * as fns from './fns.js';
 
 yargs(hideBin(process.argv))
   .command(

@@ -24,7 +24,7 @@ export const DEFAULT_CODEBOX_CONFIG = {
  * exposed to the setup.
  */
 export const DEFAULT_CODESERVER_CONFIG = {
-  'bind-addr': '127.0.0.1:8080',
+  'bind-addr': '0.0.0.0:8080',
   auth: 'password',
   cert: false,
 };

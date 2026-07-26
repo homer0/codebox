@@ -35,14 +35,9 @@ RUN rm /home/coder/.fnm-setup-version.sh
 # Entrypoint customization
 RUN mkdir /home/coder/entrypoint.d
 COPY ./src/codebox-entrypoint.sh /home/coder/entrypoint.d/codebox-entrypoint.sh
+COPY ./src/patch-pwa-manifest.mjs /home/coder/entrypoint.d/patch-pwa-manifest.mjs
 RUN sudo chmod +x /home/coder/entrypoint.d/codebox-entrypoint.sh
 ENV ENTRYPOINTD=/home/coder/entrypoint.d
-
-# Customize execution command
-COPY ./src/command-overwrite.sh /home/coder/command-overwrite.sh
-RUN sudo chmod +x /home/coder/command-overwrite.sh
-RUN sudo /home/coder/command-overwrite.sh
-RUN rm /home/coder/command-overwrite.sh
 
 # Configure GIT
 COPY ./src/git/.gitconfig /home/coder/.gitconfig

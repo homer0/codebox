@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import { merge, get } from '@homer0/object-utils';
 import yaml from 'yaml';
-import * as consts from './consts';
+import * as consts from './consts.js';
 /**
  * Gets the absolute path for known path in the box setup directory.
  *
@@ -89,7 +89,6 @@ export const getCodeServerConfig = async () => {
   }
   const { ssl } = codeServerConfig;
   delete codeServerConfig.ssl;
-  delete codeServerConfig['proxy-domain'];
   if (ssl) {
     codeServerConfig.cert = true;
   }
