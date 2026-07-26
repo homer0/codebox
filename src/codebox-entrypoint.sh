@@ -34,9 +34,6 @@ fnm default $NODE_VERSION
 echo $NODE_VERSION > ~/.fnmrc
 fnm use
 
-# Enable corepack
-corepack enable
-
 # Update ngrok
 ngrok update
 
