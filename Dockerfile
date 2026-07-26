@@ -3,7 +3,7 @@ FROM codercom/code-server:4.130.0-debian
 # Install dependencies
 
 ## apt packages
-RUN sudo apt update && sudo apt install openssh-server nginx locales-all jq -y
+RUN sudo apt update && sudo apt install openssh-server nginx locales-all jq unzip -y
 
 ## ngrok (copied from https://dashboard.ngrok.com/get-started/setup/linux)
 RUN curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
