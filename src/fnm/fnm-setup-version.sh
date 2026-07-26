@@ -13,7 +13,7 @@ setupNodeVersion() {
   yarn\
   pnpm\
   njt\
-  corepack\
+  corepack
 }
 
 # Install the current LTS versions
