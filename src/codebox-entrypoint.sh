@@ -37,6 +37,15 @@ fnm use
 # Enable corepack
 corepack enable
 
+# Update ngrok
+ngrok update
+
+# Setup ngrok auth token if provided
+if [ -n "$NGROK_AUTH_TOKEN" ]; then
+  echo "== validating ngrok auth token..."
+  ngrok config add-authtoken "$NGROK_AUTH_TOKEN"
+fi
+
 # Write code-server config
 CODE_SERVER_CONFIG=$(codeboxcli get-code-server-config --yaml)
 echo "== validating code-server config..."
