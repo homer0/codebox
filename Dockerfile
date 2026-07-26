@@ -21,16 +21,16 @@ RUN sed -i "s/ZSH_THEME=\"robbyrussell\"/if [[ -n \$SSH_CONNECTION ]]; then\n  Z
 COPY ./src/oh-my-zsh/user-configuration.sh /home/coder/.oh-my-zsh/user-configuration.sh
 RUN sed -i "s/# User configuration/# User configuration\n\nsource \/home\/coder\/.oh-my-zsh\/user-configuration.sh/" /home/coder/.zshrc
 
-# nvm
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
-RUN chown -R coder:coder /home/coder/.nvm
-COPY ./src/nvm/nvm-config.sh /home/coder/.oh-my-zsh/nvm-config.sh
-RUN echo "\n# NVM configuration\n\nsource ~/.oh-my-zsh/nvm-config.sh\n" >> .zshrc
-COPY ./src/nvm/nvm-setup-version.sh /home/coder/.nvm-setup-version.sh
-RUN sudo chmod +x /home/coder/.nvm-setup-version.sh
-RUN sudo chown coder:coder /home/coder/.nvm-setup-version.sh
-RUN /home/coder/.nvm-setup-version.sh
-RUN rm /home/coder/.nvm-setup-version.sh
+# fnm
+RUN curl -fsSL https://fnm.vercel.app/install | bash
+RUN chown -R coder:coder /home/coder/.fnm
+COPY ./src/fnm/fnm-config.sh /home/coder/.oh-my-zsh/fnm-config.sh
+RUN echo "\n# FNM configuration\n\nsource ~/.oh-my-zsh/fnm-config.sh\n" >> .zshrc
+COPY ./src/fnm/fnm-setup-version.sh /home/coder/.fnm-setup-version.sh
+RUN sudo chmod +x /home/coder/.fnm-setup-version.sh
+RUN sudo chown coder:coder /home/coder/.fnm-setup-version.sh
+RUN /home/coder/.fnm-setup-version.sh
+RUN rm /home/coder/.fnm-setup-version.sh
 
 # Entrypoint customization
 RUN mkdir /home/coder/entrypoint.d

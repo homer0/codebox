@@ -2,12 +2,12 @@
 
 . ~/.zshrc
 
-# Install a specific version of Node with nvm, and add some basic packages
+# Install a specific version of Node with fnm, and add some basic packages
 # as global.
 setupNodeVersion() {
-  nvm install $1
+  fnm install $1
 
-  npm install --global\
+  fnm install --global\
   vercel\
   diff-so-fancy\
   yarn\
@@ -16,6 +16,6 @@ setupNodeVersion() {
 }
 
 # Install the current LTS versions
-setupNodeVersion 18
 setupNodeVersion 20
-
+setupNodeVersion 22
+setupNodeVersion 24

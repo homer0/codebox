@@ -30,9 +30,9 @@ sed -i "s/{{CODEBOX_NAME}}/$CODEBOX_NAME/" ~/.oh-my-zsh/themes/robbyrussell-ssh.
 
 # Set Node default version
 NODE_VERSION=$(codeboxcli get-setting node.default-version)
-nvm alias default $NODE_VERSION
-echo $NODE_VERSION > ~/.nvmrc
-nvm use
+fnm default $NODE_VERSION
+echo $NODE_VERSION > ~/.fnmrc
+fnm use
 
 # Write code-server config
 CODE_SERVER_CONFIG=$(codeboxcli get-code-server-config --yaml)

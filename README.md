@@ -2,7 +2,7 @@
 
 An image based on [code-server](https://hub.docker.com/r/codercom/code-server) with some extra features.
 
-With code-server, you get a browser based VSCode, and this image adds SSH support, oh-my-zsh, nvm, nginx reverse proxy to access ports other than `80` and `443`, and a few more features.
+With code-server, you get a browser based VSCode, and this image adds SSH support, oh-my-zsh, fnm, nginx reverse proxy to access ports other than `80` and `443`, and a few more features.
 
 ## ⚠️ Disclaimer
 
@@ -116,9 +116,9 @@ And if you are working with features that require `HTTPS`, even though you'll ge
 
 The container installs and configures [oh-my-zsh](https://ohmyz.sh) as a shell. A special detail is that, when you connect via SSH, it uses a different theme that includes the box name as a prefix, other than that, is the default setup.
 
-### 🧩 nvm
+### 🧩 fnm
 
-This was originally thought to be a Node development environment, so the container installs [nvm](https://github.com/nvm-sh/nvm), and setups the current LTS versions.
+This was originally thought to be a Node development environment, so the container installs [fnm](https://github.com/Schniz/fnm), and setups the current LTS versions.
 
 ## 🤘 Development
 
@@ -132,7 +132,7 @@ When the image is created, the `package.json` and the `pnpm-lock.yaml` are both 
 
 ```bash
 # Set the Node version
-nvm install
+fnm install
 # Install the dependencies
 pnpm install
 
