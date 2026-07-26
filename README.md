@@ -64,6 +64,11 @@ git:
   # The name and email GIT should use for the commits.
   username: homer0
   email: me@homer0.dev
+# Container environment variables to make available in SSH sessions. Only add
+# variables that SSH users need, because their values will be readable there.
+ssh:
+  env:
+    - MY_APP_TOKEN
 ```
 
 ### 📝 VSCode
