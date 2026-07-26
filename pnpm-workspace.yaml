@@ -3,6 +3,9 @@ minimumReleaseAgeExclude:
   - '@homer0/*'
   - '@semantic-release/git@11.0.1'
 
+overrides:
+  "tar-fs@<2.1.4": "2.1.4"
+
 allowBuilds:
   # For ESLint. Configures path resolvers bindings using napi.
   unrs-resolver: true
