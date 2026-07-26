@@ -34,6 +34,9 @@ fnm default $NODE_VERSION
 echo $NODE_VERSION > ~/.fnmrc
 fnm use
 
+# Enable corepack
+corepack enable
+
 # Write code-server config
 CODE_SERVER_CONFIG=$(codeboxcli get-code-server-config --yaml)
 echo "== validating code-server config..."

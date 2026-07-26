@@ -7,12 +7,13 @@
 setupNodeVersion() {
   fnm install $1
 
-  fnm install --global\
+  npm install --global\
   vercel\
   diff-so-fancy\
   yarn\
   pnpm\
   njt\
+  corepack\
 }
 
 # Install the current LTS versions
