@@ -22,7 +22,7 @@ COPY ./src/oh-my-zsh/user-configuration.sh /home/coder/.oh-my-zsh/user-configura
 RUN sed -i "s/# User configuration/# User configuration\n\nsource \/home\/coder\/.oh-my-zsh\/user-configuration.sh/" /home/coder/.zshrc
 
 # fnm
-RUN curl -fsSL https://fnm.vercel.app/install | bash
+RUN curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir /home/coder/.fnm
 RUN chown -R coder:coder /home/coder/.fnm
 COPY ./src/fnm/fnm-config.sh /home/coder/.oh-my-zsh/fnm-config.sh
 RUN echo "\n# FNM configuration\n\nsource ~/.oh-my-zsh/fnm-config.sh\n" >> .zshrc
