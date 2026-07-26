@@ -1,4 +1,4 @@
-FROM codercom/code-server
+FROM codercom/code-server:39
 
 # Install dependencies
 
