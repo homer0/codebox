@@ -74,6 +74,7 @@ COPY ./src/cli /home/coder/.codebox/cli
 COPY ./.node-version /home/coder/.codebox/cli/
 COPY ./package.json /home/coder/.codebox/cli/
 COPY ./pnpm-lock.yaml /home/coder/.codebox/cli/
+COPY ./pnpm-workspace.yaml /home/coder/.codebox/cli/
 RUN sudo chown -R coder:coder /home/coder/.codebox/cli
 RUN echo "export CODEBOX_CLI_PATH=/home/coder/.codebox/cli" >> /home/coder/.zshrc
 RUN /home/coder/.codebox/cli/install.sh

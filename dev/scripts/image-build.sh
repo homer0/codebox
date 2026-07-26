@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 . "$(dirname "$0")/settings.sh"
 
 IMAGE_NAME=$(getsetting names.image)
