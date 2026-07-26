@@ -1,3 +1,16 @@
+# [3.1.0](https://github.com/homer0/codebox/compare/3.0.0...3.1.0) (2026-07-26)
+
+
+### Bug Fixes
+
+* add override for tar-fs ([37cb2a7](https://github.com/homer0/codebox/commit/37cb2a783f6f5f0af12cc1ec0706d821e028de38))
+* include workspace config and halt failed image builds ([3a9172a](https://github.com/homer0/codebox/commit/3a9172a4e4a99ab877441a05b010518f6e0e9cf4))
+
+
+### Features
+
+* expose allowlisted environment variables to SSH ([33e2327](https://github.com/homer0/codebox/commit/33e23276fb897750885306a129927918b8598a5a))
+
 # [3.0.0](https://github.com/homer0/codebox/compare/2.0.3...3.0.0) (2026-07-26)
 
 
