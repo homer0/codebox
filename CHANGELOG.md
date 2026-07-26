@@ -1,3 +1,41 @@
+# [3.0.0](https://github.com/homer0/codebox/compare/2.0.3...3.0.0) (2026-07-26)
+
+
+### Bug Fixes
+
+* add corepack ([041d67d](https://github.com/homer0/codebox/commit/041d67da2e3056b47196124bcf64bfe0c18c83f2))
+* add dsf alias to git ([da86a9a](https://github.com/homer0/codebox/commit/da86a9a7fd72f9b6922b5a261462105bb7e05d31))
+* exclude SSH keys from Docker build context ([c5927c5](https://github.com/homer0/codebox/commit/c5927c5e10e87d17896b793a0168dffb736746e4))
+* expose fnm path ([c44a3dc](https://github.com/homer0/codebox/commit/c44a3dcf0fca9e8888c783f5d4fea7d92f51f186))
+* generate SSH host keys at startup ([795058d](https://github.com/homer0/codebox/commit/795058da70a67c112f0d24c6f8bd1747f2d642fb))
+* install global tools for each Node version ([052ded4](https://github.com/homer0/codebox/commit/052ded4ac81a13c3a78406a419c3d8fbda3a1a53))
+* install jq ([f176986](https://github.com/homer0/codebox/commit/f176986e32c8709b167b38bcfb76e93148cbbfe7))
+* install unzip for fnm ([f10cea2](https://github.com/homer0/codebox/commit/f10cea2748e8ff823dd240381f6ff5e4c047c11c))
+* migrate from nvm to fnm ([c6a37fd](https://github.com/homer0/codebox/commit/c6a37fdd0b38ebc0112d60893b00733a401dd144))
+* move to esm ([99e256c](https://github.com/homer0/codebox/commit/99e256c44f6c7fa226ba70141fcc315a792f97e6))
+* pin code-server image ([5586fb8](https://github.com/homer0/codebox/commit/5586fb80150a12a723676b0d1f195ad18d70f9d3))
+* remove redundant locale generation ([44a5a82](https://github.com/homer0/codebox/commit/44a5a82c0089c331bd2ef72bd5b8d16e9b955aef))
+* remove trailing slash ([fff3b8c](https://github.com/homer0/codebox/commit/fff3b8c359c45e4ae98367ab43e328ad2123878d))
+* remove unsupported HTTPS port mapping ([da7867a](https://github.com/homer0/codebox/commit/da7867af8bb5e0feb5aedcf72d3b1489b97616f3))
+* set default node version to 24 ([4ad458d](https://github.com/homer0/codebox/commit/4ad458d1488e47df53ce53c81c27412481182f7a))
+* set node version to 24 ([ec1497a](https://github.com/homer0/codebox/commit/ec1497a7ff07fe01c554a0bda4f885d0685a5d89))
+* specify where fnm is installed ([69e47eb](https://github.com/homer0/codebox/commit/69e47eb47cf7916df81e7c2ab68a8568263a09d9))
+* update aliases ([a9aee54](https://github.com/homer0/codebox/commit/a9aee544d6c4866efa939dcc833de9c9daa37086))
+* update and auth ngrok ([1fee30e](https://github.com/homer0/codebox/commit/1fee30e9897725dd5c918b7686e7bd1a5697b65c))
+* update code-server startup integration ([d5e853b](https://github.com/homer0/codebox/commit/d5e853b8ba42930bcdda3bf91cdd5c1740208ed8))
+* update corepack setup ([8beb16e](https://github.com/homer0/codebox/commit/8beb16ef19a76443ab6212374a6bad4976c7c77a))
+* update eslint config ([13d13e8](https://github.com/homer0/codebox/commit/13d13e8bc775ebf8bebe599ba9b0015064299c5a))
+* update lockfile ([4aea127](https://github.com/homer0/codebox/commit/4aea12742b297b503d151d1c3780bd19283d1820))
+* update vscode extensions ([e39933b](https://github.com/homer0/codebox/commit/e39933b47fa4b23c2185d849de9ea205c294569c))
+* use .node-version instead of .nvmrc ([2ac2841](https://github.com/homer0/codebox/commit/2ac2841bdbad81d7e2c16552ecbc78fada992604))
+* use debian image as base ([990aff3](https://github.com/homer0/codebox/commit/990aff335fa922662b3c8aaae4be5f1c4144a0e6))
+* use new env syntax ([4dfcf67](https://github.com/homer0/codebox/commit/4dfcf675442f8e59f46aa90805ffcd5ab016e38a))
+
+
+### BREAKING CHANGES
+
+* nvm is no longer installed, it now uses fnm
+
 ## [2.0.3](https://github.com/homer0/codebox/compare/2.0.2...2.0.3) (2024-04-07)
 
 
