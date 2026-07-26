@@ -1,3 +1,12 @@
 minimumReleaseAge: 4320 # 3 days
 minimumReleaseAgeExclude:
   - '@homer0/*'
+  - '@semantic-release/git@11.0.1'
+
+allowBuilds:
+  # For ESLint. Configures path resolvers bindings using napi.
+  unrs-resolver: true
+  # For semantic-release-docker. Creates a node-gyp binding for crypto.
+  ssh2: true
+  # For ssh2. Allow it to get the CPU features information through the node-gyp binding.
+  cpu-features: true
