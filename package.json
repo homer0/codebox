@@ -10,6 +10,7 @@
   "author": "",
   "license": "MIT",
   "main": "src/index.js",
+  "packageManager": "pnpm@11.17.0",
   "engineStrict": true,
   "engines": {
     "node": ">=24"
