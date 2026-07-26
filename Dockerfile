@@ -1,4 +1,4 @@
-FROM codercom/code-server:39
+FROM codercom/code-server:4.130.0-debian
 
 # Install dependencies
 
