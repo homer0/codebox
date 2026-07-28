@@ -1,3 +1,10 @@
+# [3.2.0](https://github.com/homer0/codebox/compare/3.1.0...3.2.0) (2026-07-28)
+
+
+### Features
+
+* install configured box packages at startup ([c826ce7](https://github.com/homer0/codebox/commit/c826ce704bbf8f67aa88b25611308cb3bd693da6))
+
 # [3.1.0](https://github.com/homer0/codebox/compare/3.0.0...3.1.0) (2026-07-26)
 
 
