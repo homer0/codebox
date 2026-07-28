@@ -8,6 +8,9 @@ export const DEFAULT_CODEBOX_CONFIG = {
   name: 'codebox',
   description: '',
   icon: 'dark',
+  box: {
+    packages: [],
+  },
   node: {
     'default-version': 24,
   },

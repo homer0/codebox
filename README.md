@@ -33,6 +33,11 @@ You can also create a `config.yaml` in the setup directory in order to customize
 name: my-codebox
 # The icon style to use, one of: default, dark, insiders, sublime, lilac, or acid.
 icon: dark
+# Packages to install whenever the container starts. Starting with a non-empty
+# list requires network access to refresh package indexes.
+box:
+  packages:
+    - ffmpeg
 # Specific options for code-server
 code-server:
   # If you reverse proxy it trough a subdomain, like `codebox.homer0.com`, you

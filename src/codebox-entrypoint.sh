@@ -52,6 +52,21 @@ for SSH_ENV_VAR in ${(f)SSH_ENV_VARS}; do
     | sudo tee -a /etc/codebox-ssh-environment >/dev/null
 done
 
+# Install configured box packages before completing setup.
+BOX_PACKAGES=$(codeboxcli get-setting box.packages --string-list)
+if [[ -n $BOX_PACKAGES ]]; then
+  BOX_PACKAGES_LIST=("${(@f)BOX_PACKAGES}")
+  echo "== installing box packages..."
+  if ! sudo apt-get update; then
+    echo "Unable to refresh package indexes"
+    exit 1
+  fi
+  if ! sudo env DEBIAN_FRONTEND=noninteractive apt-get install --yes -- "${BOX_PACKAGES_LIST[@]}"; then
+    echo "Unable to install box packages"
+    exit 1
+  fi
+fi
+
 # Update oh-my-zsh theme
 sed -i "s/{{CODEBOX_NAME}}/$CODEBOX_NAME/" ~/.oh-my-zsh/themes/robbyrussell-ssh.zsh-theme
 
