@@ -12,7 +12,7 @@ export const DEFAULT_CODEBOX_CONFIG = {
     packages: [],
   },
   node: {
-    'default-version': 24,
+    'default-version': 26,
   },
   ssh: {
     env: [],
