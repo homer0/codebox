@@ -26,21 +26,26 @@
     "@commitlint/cli": "^21.2.1",
     "@commitlint/config-conventional": "^21.2.0",
     "@eclass/semantic-release-docker": "^4.0.0",
-    "@homer0/eslint-plugin": "^14.2.4",
-    "@homer0/prettier-config": "^2.0.1",
+    "@homer0/oxfmt-config": "^2.0.0",
+    "@homer0/oxlint-config": "^3.0.0",
+    "@homer0/tsconfig": "^6.0.1",
     "@semantic-release/changelog": "^7.0.0",
     "@semantic-release/git": "^11.0.1",
-    "eslint": "^9.39.5",
+    "@types/node": "^26.1.1",
     "husky": "^9.1.7",
     "is-ci": "^4.1.0",
     "lint-staged": "^17.1.1",
-    "prettier": "^3.9.6",
-    "semantic-release": "^25.0.8"
+    "oxfmt": "0.74.0",
+    "oxlint": "^1.89.0",
+    "semantic-release": "^25.0.8",
+    "typescript": "^6.0.3"
   },
   "lint-staged": {
-    "*.js": [
-      "eslint",
-      "prettier --write"
+    "*.{ts,tsx,js,mjs,cjs,json,css,scss,md}": [
+      "oxfmt"
+    ],
+    "*.{ts,tsx,js,mjs,cjs}": [
+      "oxlint"
     ]
   },
   "commitlint": {
@@ -51,7 +56,11 @@
   "scripts": {
     "prepare": "[ \"$NODE_ENV\" = production ] && exit 0; is-ci || husky",
     "lint": "lint-staged",
-    "lint:all": "eslint ./ --ext .js",
+    "lint:all": "oxlint .",
+    "format": "oxfmt",
+    "format:all": "oxfmt .",
+    "format:check": "oxfmt --check",
+    "types:check": "tsc --noEmit",
     "test": "echo \"lol\"",
     "dev:setting": "./dev/scripts/settings.js",
     "dev:container:delete": "./dev/scripts/container-delete.sh",

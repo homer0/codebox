@@ -1,7 +1,7 @@
-/* eslint-disable no-console */
-import yargs from 'yargs/yargs';
-import { hideBin } from 'yargs/helpers';
 import YAML from 'yaml';
+import { hideBin } from 'yargs/helpers';
+/* oxlint-disable no-console -- intentional CLI stdout output */
+import yargs from 'yargs/yargs';
 import * as consts from './consts.js';
 import * as fns from './fns.js';
 

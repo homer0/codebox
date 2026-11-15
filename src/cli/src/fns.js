@@ -1,15 +1,14 @@
-import path from 'path';
-import fs from 'fs-extra';
 import { merge, get } from '@homer0/object-utils';
+import fs from 'fs-extra';
+import path from 'path';
 import yaml from 'yaml';
 import * as consts from './consts.js';
 /**
  * Gets the absolute path for known path in the box setup directory.
  *
- * @param {?string} subpath  The name of the path, from the ones defined in the
- *                           `BOX_SETUP_SUBPATHS` constant. If no path is
- *                           specified, it will return the path to the setup
- *                           directory.
+ * @param {string | null} subpath The name of the path, from the ones defined in the
+ *   `BOX_SETUP_SUBPATHS` constant. If no path is specified, it will return the path to
+ *   the setup directory.
  * @returns {string}
  */
 export const getPath = (subpath = null) => {
@@ -23,14 +22,13 @@ export const getPath = (subpath = null) => {
 /**
  * Checks if a known path, inside the setup directory, exists.
  *
- * @param {?string} subpath  The name of the path, from the ones defined in the
- *                           `BOX_SETUP_SUBPATHS` constant.
+ * @param {string | null} subpath The name of the path, from the ones defined in the
+ *   `BOX_SETUP_SUBPATHS` constant.
  * @returns {Promise<boolean>}
  */
 export const subpathExists = (subpath) => fs.pathExists(getPath(subpath));
 /**
- * Gets the box configuration, using the `DEFAULT_BOX_CONFIG` constant as a
- * base.
+ * Gets the box configuration, using the `DEFAULT_BOX_CONFIG` constant as a base.
  *
  * @returns {Promise<object>}
  */
@@ -49,9 +47,8 @@ export const getConfig = async () => {
 /**
  * Gets the value of a single setting fromthe box configuration.
  *
- * @param {string} setting  The "path" to the setting. For example
- *                          `node.default-version`.
- * @returns {Promise<*>}
+ * @param {string} setting The "path" to the setting. For example `node.default-version`.
+ * @returns {Promise<unknown>}
  */
 export const getSetting = async (setting) => {
   const config = await getConfig();
@@ -62,7 +59,7 @@ const DEFAULT_RANDOM_STR_LENGTH = 10;
 /**
  * Generates a random string of the specified length.
  *
- * @param {number} [length=10] The length the string.
+ * @param {number} [length=10] The length the string. Default is `10`
  * @returns {string}
  */
 export const getRandomString = (length = DEFAULT_RANDOM_STR_LENGTH) => {
@@ -76,8 +73,7 @@ export const getRandomString = (length = DEFAULT_RANDOM_STR_LENGTH) => {
 };
 
 /**
- * Calculates and returns the code-server configuration based on the box
- * configuration.
+ * Calculates and returns the code-server configuration based on the box configuration.
  *
  * @returns {Promise<object>}
  */
@@ -95,9 +91,7 @@ export const getCodeServerConfig = async () => {
 
   return codeServerConfig;
 };
-/**
- * Generates the PWA manifest for the box, based on the box configuration.
- */
+/** Generates the PWA manifest for the box, based on the box configuration. */
 export const getPWAManifest = async () => {
   const { name, icon, description } = await getConfig();
   const pwaMnifest = merge(consts.DEFAULT_PWA_MANIFEST, {
@@ -106,7 +100,7 @@ export const getPWAManifest = async () => {
     description: description || consts.DEFAULT_PWA_MANIFEST.description,
   });
   const iconPath = `{{BASE}}/_static/src/browser/media/codebox-icons/${icon}`;
-  // eslint-disable-next-line no-magic-numbers
+  // oxlint-disable-next-line no-magic-numbers -- standard PWA icon sizes
   pwaMnifest.icons = [192, 256, 384, 512, 1024].map((size) => ({
     src: `${iconPath}/icon-${size}.png`,
     type: 'image/png',
@@ -117,16 +111,16 @@ export const getPWAManifest = async () => {
   return pwaMnifest;
 };
 /**
- * Transforms an array of words into a human-readable sentence, by adding
- * a comma between each world, and a separator between the last two words.
+ * Transforms an array of words into a human-readable sentence, by adding a comma between
+ * each world, and a separator between the last two words.
  *
  * @example
- * humanList(['foo', 'bar', 'baz'])
- * // => 'foo, bar, and baz'
+ *   humanList(['foo', 'bar', 'baz']);
+ *   // => 'foo, bar, and baz'
  *
- * @param {string[]} array                  The list of words.
- * @param {string}   [lastSeparator='and']  The separator to use between the last
- *                                          two words.
+ * @param {string[]} array The list of words.
+ * @param {string} [lastSeparator='and'] The separator to use between the last two words.
+ *   Default is `'and'`
  * @returns {string}
  */
 export const humanList = (array, lastSeparator = 'and') => {

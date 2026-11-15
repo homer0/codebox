@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-import path from 'path';
-import YAML from 'yaml';
 import { get } from '@homer0/object-utils';
 import fs from 'fs-extra';
+import path from 'path';
+import YAML from 'yaml';
 
 (async () => {
   const setting = process.argv.slice().pop();
@@ -21,6 +21,6 @@ import fs from 'fs-extra';
     throw new Error(`No setting found for ${setting}`);
   }
 
-  // eslint-disable-next-line no-console
+  // oxlint-disable-next-line no-console -- intentional stdout output
   console.log(settingValue);
 })();
