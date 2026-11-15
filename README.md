@@ -96,20 +96,20 @@ Since you'll me mounting the profile directory too, codebox will only copy the `
 
 ## 🗂 Volumes
 
-| Path | Access | Description |
-| ---- | ------ | ----------- |
-| `/home/coder/.codebox/setup` | RO | The setup directory, that contains the SSH keys and the configuration. |
-| `/home/coder/.local/share/code-server` | RW | The VSCode profile directory, where all configurations and settings are stored. |
-| `/home/coder/.config` | RW | Where the code-server configuration is stored |
-| `/home/coder/code` | RW | The directory where you'll create your projects. |
+| Path                                   | Access | Description                                                                     |
+| -------------------------------------- | ------ | ------------------------------------------------------------------------------- |
+| `/home/coder/.codebox/setup`           | RO     | The setup directory, that contains the SSH keys and the configuration.          |
+| `/home/coder/.local/share/code-server` | RW     | The VSCode profile directory, where all configurations and settings are stored. |
+| `/home/coder/.config`                  | RW     | Where the code-server configuration is stored                                   |
+| `/home/coder/code`                     | RW     | The directory where you'll create your projects.                                |
 
 ## 🚦 Ports
 
-| Number | Description |
-| ------ | ----------- |
+| Number | Description                 |
+| ------ | --------------------------- |
 | `80`   | For the nginx reverse proxy |
-| `22`   | For the SSH connection |
-| `8080` | For the code-server |
+| `22`   | For the SSH connection      |
+| `8080` | For the code-server         |
 
 ## 🚀 Other features
 
