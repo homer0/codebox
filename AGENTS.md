@@ -14,7 +14,7 @@
 
 ## Commands that matter
 
-- Use Node 24 (`.node-version`) and pnpm 11.17.0 (`package.json`).
+- Use Node 24 (`.node-version`) and pnpm 12.17.0 (`package.json`).
 - `pnpm run lint:all` checks all JavaScript. `pnpm run lint` runs staged-file checks through `lint-staged`.
 - `pnpm test` is a placeholder command; do not represent it as a test suite.
 - `pnpm run dev:image:build` builds the Docker image after deleting its configured container and image. `pnpm run dev:container:run` recreates the configured container. `pnpm run dev:all` performs both.
