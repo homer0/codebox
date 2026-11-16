@@ -147,7 +147,7 @@ const inspectOpenSshContainer = (buffer) => {
 };
 
 /** Validate private material without requesting or retaining a passphrase. */
-const validatePrivateKey = async (file, label) => {
+export const validatePrivateKey = async (file, label) => {
   try {
     const { format, buffer } = decodeArmor(file.contents, label);
     if (format === 'OPENSSH PRIVATE KEY') {

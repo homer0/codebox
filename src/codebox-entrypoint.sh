@@ -2,8 +2,23 @@
 
 . ~/.zshrc
 
+# Stop accepting new connections before validation; failures must leave SSH stopped.
+if ! sudo service ssh stop; then
+  echo "Unable to stop SSH before setup"
+  exit 1
+fi
+sudo service ssh status >/dev/null 2>&1
+SSH_SERVICE_STATUS=$?
+if [ "$SSH_SERVICE_STATUS" -ne 3 ]; then
+  echo "Unable to confirm SSH is stopped; refusing to replace credentials"
+  exit 1
+fi
+
 # Generate missing host keys once per container; existing keys survive restarts.
-sudo ssh-keygen -A
+if ! sudo ssh-keygen -A; then
+  echo "Unable to generate missing SSH host keys"
+  exit 1
+fi
 
 CODEBOX_NAME=$(codeboxcli get-setting name)
 
@@ -14,19 +29,11 @@ GIT_CONFIG_EMAIL=$(codeboxcli get-setting git.email)
 sed -i "s/{{GIT_CONFIG_USERNAME}}/$GIT_CONFIG_USERNAME/" ~/.gitconfig
 sed -i "s/{{GIT_CONFIG_EMAIL}}/$GIT_CONFIG_EMAIL/" ~/.gitconfig
 
-# Validate SSH keys directory
-if [ "$(codeboxcli has ssh-keys)" = "false" ]; then
-  echo "No 'ssh-keys' folder found on your setup directory"
+# Validate all desired credentials, then replace only managed runtime files.
+if ! codeboxcli install-ssh; then
+  echo "SSH credential setup failed; SSH remains stopped"
   exit 1
 fi
-
-# Update SSH keys permissions
-SSH_KEYS_PATH=$(codeboxcli get-path ssh-keys)
-cp -R "$SSH_KEYS_PATH" ~/.ssh
-chmod 0700 ~/.ssh && \
-  chmod 600 ~/.ssh/id_rsa && \
-  chmod 600 ~/.ssh/id_rsa.pub && \
-  cp ~/.ssh/id_rsa.pub ~/.ssh/authorized_keys
 
 # Make explicitly allowed container variables available to SSH sessions through PAM.
 SSH_ENV_VARS=$(codeboxcli get-setting ssh.env --string-list)
@@ -180,8 +187,20 @@ sudo env PATH="$PATH" node /home/coder/entrypoint.d/patch-pwa-manifest.mjs $PWA_
 rm $PWA_MANIFEST_PATH
 
 
-# Restart SSH service
-sudo service ssh restart
+# Validate daemon configuration before allowing any new SSH connections.
+if ! sudo install -d -m 0755 -o root -g root /run/sshd; then
+  echo "Unable to prepare SSH daemon runtime directory; SSH remains stopped"
+  exit 1
+fi
+if ! sudo /usr/sbin/sshd -t; then
+  echo "Invalid SSH daemon configuration; SSH remains stopped"
+  exit 1
+fi
+if ! sudo service ssh start; then
+  echo "Unable to start SSH after setup"
+  sudo service ssh stop
+  exit 1
+fi
 
 # Restart nginx service
 sudo service nginx restart

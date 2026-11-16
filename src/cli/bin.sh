@@ -14,4 +14,6 @@ fi
 
 # Output the JS value using print to avoid new lines and extra spaces.
 OUTPUT=$(node "${CODEBOX_CLI_PATH}/src/index.js" "$@")
-printf "%s" $OUTPUT
+NODE_EXIT_STATUS=$?
+printf "%s" "$OUTPUT"
+exit $NODE_EXIT_STATUS

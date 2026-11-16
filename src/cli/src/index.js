@@ -4,8 +4,15 @@ import { hideBin } from 'yargs/helpers';
 import yargs from 'yargs/yargs';
 import * as consts from './consts.js';
 import * as fns from './fns.js';
+import { installConfiguredSsh } from './ssh-install.js';
 
 yargs(hideBin(process.argv))
+  .command(
+    'install-ssh',
+    'Validates and installs managed SSH credentials (SSH must be stopped)',
+    () => {},
+    installConfiguredSsh,
+  )
   .command(
     'get-config',
     'Retrieves the codebox setup config',

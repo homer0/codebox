@@ -58,7 +58,8 @@ RUN sudo usermod -s $(which zsh) coder
 
 # Setup SSH
 RUN sudo rm -f /etc/ssh/ssh_host_*_key /etc/ssh/ssh_host_*_key.pub
-RUN sudo sed -i "s/#PasswordAuthentication yes/PasswordAuthentication no/" /etc/ssh/sshd_config
+COPY ./src/sshd_config /etc/ssh/sshd_config
+RUN sudo chown root:root /etc/ssh/sshd_config && sudo chmod 0644 /etc/ssh/sshd_config
 RUN echo "session required pam_env.so envfile=/etc/codebox-ssh-environment" | sudo tee -a /etc/pam.d/sshd
 RUN sudo install -m 0600 -o root -g root /dev/null /etc/codebox-ssh-environment
 
