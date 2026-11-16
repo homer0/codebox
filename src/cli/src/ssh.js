@@ -204,7 +204,7 @@ const validateAuthorization = async (file, label) => {
 };
 
 /** Merge raw overrides before rendering; never append additive IdentityFile duplicates. */
-const getHostOptions = (host, options) => {
+export const getHostOptions = (host, options) => {
   const { alias, runtimeKeyDirectory } = options;
   const label = `ssh.client.hosts.${alias}`;
   requireMapping(host, label);

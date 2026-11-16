@@ -12,6 +12,7 @@ import {
 import os from 'node:os';
 import path from 'node:path';
 import { getConfig, getPath } from './fns.js';
+import { ensureSshAgent } from './ssh-agent.js';
 import { getDesiredSshState, validatePrivateKey } from './ssh.js';
 
 const SSH_DIRECTORY_MODE = 0o700;
@@ -126,4 +127,5 @@ export const installConfiguredSsh = async () => {
     sourceDirectory: getPath('ssh-keys'),
     sshDirectory: path.join(user.homedir, '.ssh'),
   });
+  await ensureSshAgent();
 };

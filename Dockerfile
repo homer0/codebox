@@ -57,6 +57,7 @@ RUN sudo chsh -s $(which zsh)
 RUN sudo usermod -s $(which zsh) coder
 
 # Setup SSH
+ENV SSH_AUTH_SOCK=/home/coder/.codebox/ssh-agent/agent.sock
 RUN sudo rm -f /etc/ssh/ssh_host_*_key /etc/ssh/ssh_host_*_key.pub
 COPY ./src/sshd_config /etc/ssh/sshd_config
 RUN sudo chown root:root /etc/ssh/sshd_config && sudo chmod 0644 /etc/ssh/sshd_config

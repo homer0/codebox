@@ -5,8 +5,18 @@ import yargs from 'yargs/yargs';
 import * as consts from './consts.js';
 import * as fns from './fns.js';
 import { installConfiguredSsh } from './ssh-install.js';
+import { unlockConfiguredSshKeys } from './ssh-unlock.js';
 
 yargs(hideBin(process.argv))
+  .command(
+    'unlock-ssh-keys',
+    'Unlocks all configured outbound SSH identities in the shared agent',
+    (yarg) => yarg.strict(),
+    async (argv) => {
+      if (argv._.length !== 1) throw new Error('unlock-ssh-keys accepts no arguments');
+      await unlockConfiguredSshKeys();
+    },
+  )
   .command(
     'install-ssh',
     'Validates and installs managed SSH credentials (SSH must be stopped)',
