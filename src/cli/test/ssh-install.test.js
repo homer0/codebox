@@ -227,6 +227,7 @@ describe('managed SSH installation', () => {
           if [[ $3 == status ]]; then
             if [[ $STILL_RUNNING == yes ]]; then return 0; fi
             if [[ $STATUS_FAIL == yes ]]; then return 4; fi
+            if [[ $STALE_PID == yes ]]; then return 1; fi
             return 3
           fi
           if [[ $3 == start && $START_FAIL == yes ]]; then return 1; fi
@@ -248,6 +249,7 @@ describe('managed SSH installation', () => {
       { daemonFail: 'yes', actions: stoppedActions },
       { startFail: 'yes', actions: ['stop', 'status', 'start', 'stop'] },
       { success: true, actions: ['stop', 'status', 'start'] },
+      { stalePid: 'yes', success: true, actions: ['stop', 'status', 'start'] },
     ]) {
       await writeFile(trace, '');
       const result = spawnSync(
@@ -262,6 +264,7 @@ describe('managed SSH installation', () => {
             STOP_FAIL: scenario.stopFail || 'no',
             STILL_RUNNING: scenario.stillRunning || 'no',
             STATUS_FAIL: scenario.statusFail || 'no',
+            STALE_PID: scenario.stalePid || 'no',
             DAEMON_FAIL: scenario.daemonFail || 'no',
             START_FAIL: scenario.startFail || 'no',
             PATH: '/usr/bin:/bin',

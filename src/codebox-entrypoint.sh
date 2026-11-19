@@ -9,7 +9,8 @@ if ! sudo service ssh stop; then
 fi
 sudo service ssh status >/dev/null 2>&1
 SSH_SERVICE_STATUS=$?
-if [ "$SSH_SERVICE_STATUS" -ne 3 ]; then
+# Debian reports 1 for a dead daemon with a stale PID file, and 3 when stopped cleanly.
+if [ "$SSH_SERVICE_STATUS" -ne 1 ] && [ "$SSH_SERVICE_STATUS" -ne 3 ]; then
   echo "Unable to confirm SSH is stopped; refusing to replace credentials"
   exit 1
 fi
