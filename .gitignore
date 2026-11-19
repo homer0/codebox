@@ -1,4 +1,11 @@
 id_rsa*
+
+# Credentials are mounted at runtime; keep only the directory placeholders.
+/dev/box/ssh-keys/*
+!/dev/box/ssh-keys/.keep
+/src/ssh/*
+!/src/ssh/.keep
+
 /node_modules
 /.vscode
 /.mount
