@@ -1,6 +1,8 @@
 names:
   container: codebox-container
   image: codebox
+volumes:
+  ssh-host-keys: codebox-ssh-host-keys
 ports:
   http: 5580
   ssh: 5522

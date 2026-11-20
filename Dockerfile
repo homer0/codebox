@@ -3,7 +3,9 @@ FROM codercom/code-server:4.130.0-debian
 # Install dependencies
 
 ## apt packages
-RUN sudo apt update && sudo apt install openssh-server nginx locales-all jq unzip libatomic1 -y
+# Remove package-generated host keys before this layer is committed.
+RUN sudo apt update && sudo apt install openssh-server nginx locales-all jq unzip libatomic1 -y \
+  && sudo rm -f /etc/ssh/ssh_host_*_key /etc/ssh/ssh_host_*_key.pub
 
 ## ngrok (copied from https://dashboard.ngrok.com/get-started/setup/linux)
 RUN curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
@@ -58,7 +60,11 @@ RUN sudo usermod -s $(which zsh) coder
 
 # Setup SSH
 ENV SSH_AUTH_SOCK=/home/coder/.codebox/ssh-agent/agent.sock
-RUN sudo rm -f /etc/ssh/ssh_host_*_key /etc/ssh/ssh_host_*_key.pub
+COPY ./src/setup-ssh-host-keys.sh /usr/local/lib/codebox/setup-ssh-host-keys.sh
+RUN command -v mountpoint && command -v flock \
+  && sudo chown root:root /usr/local/lib/codebox/setup-ssh-host-keys.sh \
+  && sudo chmod 0755 /usr/local/lib/codebox/setup-ssh-host-keys.sh \
+  && sudo install -d -m 0700 -o root -g root /var/lib/codebox/ssh-host-keys
 COPY ./src/sshd_config /etc/ssh/sshd_config
 RUN sudo chown root:root /etc/ssh/sshd_config && sudo chmod 0644 /etc/ssh/sshd_config
 RUN echo "session required pam_env.so envfile=/etc/codebox-ssh-environment" | sudo tee -a /etc/pam.d/sshd

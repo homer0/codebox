@@ -15,9 +15,9 @@ if [ "$SSH_SERVICE_STATUS" -ne 1 ] && [ "$SSH_SERVICE_STATUS" -ne 3 ]; then
   exit 1
 fi
 
-# Generate missing host keys once per container; existing keys survive restarts.
-if ! sudo ssh-keygen -A; then
-  echo "Unable to generate missing SSH host keys"
+# Persistent server identity is required; never fall back to container-local keys.
+if ! sudo /usr/local/lib/codebox/setup-ssh-host-keys.sh; then
+  echo "Unable to prepare persistent SSH host identity; SSH remains stopped"
   exit 1
 fi
 

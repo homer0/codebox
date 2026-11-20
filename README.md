@@ -12,7 +12,7 @@ I suck at Docker and Bash, so, some of the code may be a bit messy, and it may n
 
 Since there are a lot of things to configure, and part of the configuration requires files, I decided to avoid splitting things into environment vars and volumes, and just use a readonly volume for the whole configuration.
 
-Mount your setup directory read-only at `/home/coder/.codebox/setup`. It must contain `config.yaml` with a nonempty `ssh.authorized-keys` list and the referenced public-key files in `ssh-keys/`. Outbound private keys are optional and selected independently through SSH client hosts.
+Mount your setup directory read-only at `/home/coder/.codebox/setup`. It must contain `config.yaml` with a nonempty `ssh.authorized-keys` list and the referenced public-key files in `ssh-keys/`. Outbound private keys are optional and selected independently through SSH client hosts. Also attach a dedicated writable host-key volume at `/var/lib/codebox/ssh-host-keys`; see [persistent server identity](#persistent-server-identity).
 
 ```text
 setup/
@@ -161,7 +161,7 @@ Codebox manages `~/.ssh/authorized_keys`, `~/.ssh/config`, and `~/.ssh/codebox-k
 
 Removing a configured outbound key does not revoke it at the external service or guarantee erasure of a copy already loaded in the agent. Restart the agent/container and revoke or rotate the credential at that service when needed. A read-only mount also does not hide its contents: processes with read access can read unselected source keys too. Mount only credentials appropriate for this box.
 
-SSH host keys are separate from these client credentials. Missing host keys are generated at startup and survive restarts of the same container. **Host-key persistence across container replacement is not implemented**: replacing the container changes its server identity. Verify the new fingerprint through a trusted channel before updating your client's `known_hosts`; do not disable host-key checking as a migration shortcut.
+SSH server host keys are separate from these client credentials. They identify the box to connecting clients and now live in a required persistent volume. Reusing that volume preserves server fingerprints across container replacement; choosing a new empty volume creates a new identity. See the deployment, adoption, backup, and reset guidance below.
 
 #### Migrating from `id_rsa`
 
@@ -187,6 +187,80 @@ Cleanup is limited to managed paths and the two known legacy default files. Insp
 
 Credential files with arbitrary names in `dev/box/ssh-keys/` and `src/ssh/` are excluded from Git and the Docker build context; `.keep` placeholders remain supported. Do not force-add credentials. Ignore rules do not erase secrets already committed: revoke/rotate any exposed key and handle repository history separately.
 
+### Persistent server identity
+
+Use one dedicated Docker named volume per box, mounted read/write at `/var/lib/codebox/ssh-host-keys`. It is separate from the read-only setup directory, incoming authorization, outbound private keys, and the SSH agent. Independent boxes must use different volume names; sharing one makes them advertise the same server identity.
+
+For example, after building the local `codebox` image and preparing a valid setup directory, create a named volume and attach it explicitly:
+
+```bash
+docker volume create codebox-ssh-host-keys
+docker run -d --name codebox-container \
+  -p 5522:22 -p 5580:80 \
+  --mount type=volume,src=codebox-ssh-host-keys,dst=/var/lib/codebox/ssh-host-keys,volume-nocopy \
+  --mount type=bind,src=/absolute/path/to/setup,dst=/home/coder/.codebox/setup,readonly \
+  codebox
+```
+
+Choose unused container/volume names for a new box and add your normal editor/config/workspace mounts as needed. For an existing box, stop/remove only its container and recreate it with the **same named volume**. A typo or different volume name can create a new empty volume and therefore a new identity; verify the mounted source before replacement. Development uses `volumes.ssh-host-keys` in `dev/dev.yaml`, defaulting to `codebox-ssh-host-keys`. Normal `dev:*` image/container replacement keeps the named volume, even though the separate `.codebox-mount` directory is recreated.
+
+The image intentionally does not declare an anonymous Docker volume. Startup requires an actual writable mount at the fixed host-key path and fails SSH setup if it is missing, read-only, or unusable. An explicit writable bind mount can also satisfy that check, but its storage lifecycle is your responsibility; the default and recommended deployment is a named volume. There is no fallback to container-local keys or `/etc/ssh/ssh_host_*` defaults.
+
+A root-owned helper generates only missing Ed25519, ECDSA (nistp256), and RSA keys using OpenSSH defaults. The daemon explicitly selects those persistent files. The directory is `root:root` mode `0700`, private keys are `0600`, and public companions are `0644`. The helper derives public companions from the private keys and never silently replaces an invalid, encrypted, wrong-type, or symlinked private key. Fix the storage or restore a trusted backup before retrying. Concurrent host-key setup fails instead of generating competing identities; its kernel lock releases when the setup process exits.
+
+Persistent server keys are generated only at runtime. Package-generated default host keys are removed in the same build layer as package installation, and no private server key is copied into the image. Do not put host keys in `setup/ssh-keys/`, bake them into a custom image, or make their directory writable by `coder`.
+
+#### First adoption and migration
+
+Adding a **new empty volume** to a box that previously used ephemeral `/etc/ssh` keys changes its server identity once. It does not automatically migrate those old keys. Verify the new public fingerprints through a trusted channel before updating a client's `known_hosts`; never disable host-key checking to hide the change.
+
+```bash
+docker exec -u root codebox-container ssh-keygen -l -E sha256 \
+  -f /var/lib/codebox/ssh-host-keys/ssh_host_ed25519_key.pub
+```
+
+Repeat for the ECDSA/RSA public files if your clients use those algorithms. To preserve an old identity instead, explicitly export the host keys from the **specific old box you own**, while it still exists, into a protected backup and restore the expected `ssh_host_ed25519_key`, `ssh_host_ecdsa_key`, and `ssh_host_rsa_key` files into the new volume before first startup. Older releases stored these in `/etc/ssh`. Never copy keys from an unrelated running resource. No migration or modification of existing real keys is automatic.
+
+#### Backup and restore
+
+Back up after successful setup, or while the box is stopped, not while keys are being initialized. The archive contains **private server keys**: keep it outside repositories, restrict access, and protect any off-machine copy. Only restore archives you trust.
+
+```bash
+HOST_KEY_VOLUME=codebox-ssh-host-keys
+BACKUP_DIR="$HOME/.local/share/codebox-backups"
+mkdir -p "$BACKUP_DIR"
+chmod 0700 "$BACKUP_DIR"
+umask 077
+BACKUP_FILE="$BACKUP_DIR/ssh-host-keys-$(date +%Y%m%d-%H%M%S).tar.gz"
+docker volume inspect "$HOST_KEY_VOLUME" >/dev/null && \
+  docker run --rm --user root --entrypoint /bin/tar \
+    --mount "type=volume,src=$HOST_KEY_VOLUME,dst=/host-keys,readonly" \
+    codebox -C /host-keys -czf - . > "$BACKUP_FILE"
+```
+
+Inspecting the volume first avoids accidentally backing up a newly created empty volume after a naming mistake. To restore, use a new, unused empty volume and a trusted archive; do not extract over a live identity:
+
+```bash
+docker volume create codebox-ssh-host-keys-restored
+docker run --rm -i --user root --entrypoint /bin/tar \
+  --mount type=volume,src=codebox-ssh-host-keys-restored,dst=/host-keys,volume-nocopy \
+  codebox -C /host-keys -xzf - < "$BACKUP_FILE"
+```
+
+Recreate the intended box with `codebox-ssh-host-keys-restored` mounted at `/var/lib/codebox/ssh-host-keys` (or change its dev volume setting), then verify fingerprints before retiring the previous volume. Incoming/outbound credentials still come from the setup mount; a host-key backup is not a backup of those credentials or the editor profile.
+
+#### Deliberate identity reset
+
+Deleting this volume is an intentional server identity reset, not normal cleanup. Back it up first if you may need the identity again. Stop and remove every container using it before deletion; adjust these names for the specific box you intend to reset:
+
+```bash
+docker stop codebox-container
+docker rm codebox-container
+docker volume rm codebox-ssh-host-keys
+```
+
+Recreate the box with a new empty named volume to generate fresh keys. Verify the new fingerprints and update only the affected trusted host entries. This does not revoke incoming/outbound client keys, and normal development delete/build/run scripts never perform this volume deletion.
+
 ### 📝 VSCode
 
 While creating the container, you can also push your custom extensions, settings, and/or keybindings to the VSCode installation, you just need to create a `vscode` directory in the setup directory:
@@ -207,12 +281,13 @@ Since you'll me mounting the profile directory too, codebox will only copy the `
 
 ## 🗂 Volumes
 
-| Path                                   | Access | Description                                                                     |
-| -------------------------------------- | ------ | ------------------------------------------------------------------------------- |
-| `/home/coder/.codebox/setup`           | RO     | The setup directory, that contains the SSH keys and the configuration.          |
-| `/home/coder/.local/share/code-server` | RW     | The VSCode profile directory, where all configurations and settings are stored. |
-| `/home/coder/.config`                  | RW     | Where the code-server configuration is stored                                   |
-| `/home/coder/code`                     | RW     | The directory where you'll create your projects.                                |
+| Path                                   | Access | Description                                                                         |
+| -------------------------------------- | ------ | ----------------------------------------------------------------------------------- |
+| `/home/coder/.codebox/setup`           | RO     | The setup directory, that contains the SSH keys and the configuration.              |
+| `/var/lib/codebox/ssh-host-keys`       | RW     | Required dedicated server-identity volume; root-only, retained across replacements. |
+| `/home/coder/.local/share/code-server` | RW     | The VSCode profile directory, where all configurations and settings are stored.     |
+| `/home/coder/.config`                  | RW     | Where the code-server configuration is stored                                       |
+| `/home/coder/code`                     | RW     | The directory where you'll create your projects.                                    |
 
 ## 🚦 Ports
 
@@ -291,6 +366,7 @@ git ls-files --error-unmatch dev/box/ssh-keys/.keep src/ssh/.keep
 | Configuration/rendering | Required authorization, exact filenames, public/private roles, encrypted formats, unsafe inputs, raw overrides, and effective client options.                                                                                |
 | Managed installation    | Fresh/repeated layout, permissions/ownership, authorization replacement, outbound removal, legacy cleanup, unrelated-file preservation, and invalid destinations.                                                            |
 | Agent/unlock            | Socket/PID lifecycle, duplicate-start prevention, real terminal prompts, prompt skipping, cancellation/partial success, raw path discovery, legacy public companions, and loopback authentication with `IdentitiesOnly yes`. |
+| Persistent host keys    | Missing-key generation, private-key preservation, public companion repair, invalid/encrypted/symlink rejection, mount/privilege/lock failures, and named dev-volume wiring.                                                  |
 | Startup control flow    | Mocked stop/status/start failures and Debian's dead-daemon/stale-PID status after restart.                                                                                                                                   |
 
 #### Isolated image workflow
@@ -353,9 +429,12 @@ Build and run with the setup mount read-only and published ports limited to loop
 
 ```bash
 docker build -t codebox-ssh-verification:local .
+HOST_KEY_VOLUME=codebox-ssh-verification-host-keys-a
+docker volume create "$HOST_KEY_VOLUME"
 docker run -d --name codebox-ssh-verification \
   -p 127.0.0.1::22 -p 127.0.0.1::8080 \
   -e CODEBOX_VERIFY_MARKER=disposable-runtime-only \
+  --mount "type=volume,src=$HOST_KEY_VOLUME,dst=/var/lib/codebox/ssh-host-keys,volume-nocopy" \
   --mount "type=bind,src=$VERIFY_ROOT/setup,dst=/home/coder/.codebox/setup,readonly" \
   --mount "type=bind,src=$VERIFY_ROOT/config,dst=/home/coder/.config" \
   --mount "type=bind,src=$VERIFY_ROOT/profile,dst=/home/coder/.local/share/code-server" \
@@ -430,22 +509,26 @@ Complete this lifecycle checklist using only the disposable source files:
 | Agent/container restart      | Restore both host entries, restart the container, rediscover host ports, and confirm the agent starts without loaded identities. Unlock again interactively. The disposable probe daemon on port 2222 must also be started again after container restart.                  |
 | Browser/editor reuse         | After unlock, repeat browser-terminal SSH and editor Git fetch without exporting or repairing environment variables.                                                                                                                                                       |
 
-Remove only the named verification resources when finished:
+Also record all three public host-key fingerprints, restart the container, and replace it while reattaching `$HOST_KEY_VOLUME`; the fingerprints and a pinned client login must remain unchanged. A second **new disposable volume** must produce different fingerprints. Exercise the backup/restore instructions with a third disposable volume and confirm restored fingerprints match, substituting the verification image and fixture volume names for every deployment default in those examples. Missing/read-only mounts and a deliberately invalid key in a disposable volume must leave SSH stopped without regenerating that invalid private key. Never perform those negative checks on real host keys.
+
+Remove only the named verification resources when finished. Removing a fixture volume below is deliberate destructive cleanup, not a normal replacement step; do not substitute a production volume:
 
 ```bash
 docker rm --force codebox-ssh-verification
 docker image rm codebox-ssh-verification:local
+docker volume rm "$HOST_KEY_VOLUME"
+# Explicitly remove any separately named fresh/restore fixture volumes too.
 ```
 
 Then delete only the disposable `$VERIFY_ROOT` directory and its contents. Do not delete your normal mounts, setup directory, or key folders. No real credential should be used anywhere in this workflow.
 
 #### Recorded verification
 
-Verified locally on 2026-11-16 with 35 automated tests, including real OpenSSH terminal prompts and a disposable loopback server. All tests, formatting, lint, type checks, and shell syntax checks passed.
+Verified locally on 2026-11-16 with 42 automated tests, including real OpenSSH terminal prompts, persistent host-key helper checks, and a disposable loopback server. All tests, formatting, lint, type checks, and shell syntax checks passed.
 
 A separate approved isolated build/run verified the actual arm64 Docker image with code-server 4.130.0: fresh/repeated startup, read-only setup, ownership/modes, effective key-only policy, PAM `ssh.env`, interactive encrypted OpenSSH/PKCS#8 unlock over SSH, selected outbound identity use, authorization rotation/revocation, outbound removal, unrelated-file preservation, and invalid-input fail-closed behavior. Container restart cleared loaded keys and required unlocking again. The actual browser terminal reused those unlocked identities, and the editor's Git extension fetched through both selected identities without environment repair.
 
-That run found and corrected two prerequisites: `libatomic1` is needed by the installed Node runtime on arm64, and Debian's dead-daemon/stale-PID status must be accepted as stopped during container restart. The verification container, images, browser instance, and disposable credentials were removed afterward. This evidence covers the tested arm64 environment; it does not claim verification of every host architecture, upstream release, or external service. Host-key persistence across container replacement remains intentionally unimplemented.
+That run found and corrected two prerequisites: `libatomic1` is needed by the installed Node runtime on arm64, and Debian's dead-daemon/stale-PID status must be accepted as stopped during container restart. The verification container, images, browser instance, and disposable credentials were removed afterward. This evidence covers the tested arm64 environment; it does not claim verification of every host architecture, upstream release, or external service. Persistent host identity was additionally verified in the actual arm64 image: all three fingerprints survived restart and same-volume replacement; a separate fresh volume produced different identities; protected backup/restore preserved the original fingerprints. Incoming SSH, encrypted client-key unlock, shared-agent use, and outbound SSH remained functional. Missing/read-only mounts and an invalid private host key failed closed without ephemeral fallback or silent regeneration. An exported-layer scan found no private server host keys in any image layer. Only explicitly approved disposable volumes were deleted afterward.
 
 ### 🛠 Dev configuration
 
@@ -455,6 +538,9 @@ Inside the `dev` directory, you'll find a `dev.yaml` file that contains the conf
 names:
   container: codebox-container
   image: codebox
+volumes:
+  # Keep this named volume when replacing this box; choose another name for a different box.
+  ssh-host-keys: codebox-ssh-host-keys
 ports:
   # 80
   http: 4580

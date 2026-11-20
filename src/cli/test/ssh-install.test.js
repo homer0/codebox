@@ -197,6 +197,9 @@ describe('managed SSH installation', () => {
       'usepam yes',
       'port 22',
       'subsystem sftp internal-sftp',
+      'hostkey /var/lib/codebox/ssh-host-keys/ssh_host_ed25519_key',
+      'hostkey /var/lib/codebox/ssh-host-keys/ssh_host_ecdsa_key',
+      'hostkey /var/lib/codebox/ssh-host-keys/ssh_host_rsa_key',
     ]) {
       assert.ok(effectiveLines.includes(expected), expected);
     }
@@ -233,6 +236,7 @@ describe('managed SSH installation', () => {
           if [[ $3 == start && $START_FAIL == yes ]]; then return 1; fi
           return 0
         fi
+        if [[ $1 == /usr/local/lib/codebox/setup-ssh-host-keys.sh && $HOST_KEYS_FAIL == yes ]]; then return 1; fi
         if [[ $1 == /usr/sbin/sshd ]]; then
           if [[ $DAEMON_FAIL == yes ]]; then return 1; fi
         fi
@@ -243,6 +247,7 @@ describe('managed SSH installation', () => {
     const stoppedActions = ['stop', 'status'];
     for (const scenario of [
       { installStatus: 1, actions: stoppedActions },
+      { hostKeysFail: 'yes', actions: stoppedActions },
       { stopFail: 'yes', actions: ['stop'] },
       { stillRunning: 'yes', actions: stoppedActions },
       { statusFail: 'yes', actions: stoppedActions },
@@ -261,6 +266,7 @@ describe('managed SSH installation', () => {
           env: {
             TRACE: trace,
             INSTALL_STATUS: String(scenario.installStatus || 0),
+            HOST_KEYS_FAIL: scenario.hostKeysFail || 'no',
             STOP_FAIL: scenario.stopFail || 'no',
             STILL_RUNNING: scenario.stillRunning || 'no',
             STATUS_FAIL: scenario.statusFail || 'no',
