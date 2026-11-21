@@ -39,7 +39,8 @@ RUN curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
 RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
 # Keep history in a mountable directory so zsh can replace the file when saving.
-RUN sudo install -d -m 0700 -o coder -g coder /home/coder/.local/state/zsh \
+RUN mkdir -p /home/coder/.local/state \
+  && install -d -m 0700 /home/coder/.local/state/zsh \
   && sed -i '1i HISTFILE=/home/coder/.local/state/zsh/history' /home/coder/.zshrc
 
 # Replace oh-my-zsh theme
