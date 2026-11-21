@@ -63,15 +63,15 @@ RUN rm /home/coder/.fnm-setup-version.sh
 
 # Entrypoint customization
 RUN mkdir /home/coder/entrypoint.d
-COPY ./src/codebox-entrypoint.sh /home/coder/entrypoint.d/codebox-entrypoint.sh
-COPY ./src/patch-pwa-manifest.mjs /home/coder/entrypoint.d/patch-pwa-manifest.mjs
-RUN sudo chmod +x /home/coder/entrypoint.d/codebox-entrypoint.sh
+COPY ./src/codebox-entrypoint.sh /usr/local/lib/codebox/codebox-entrypoint.sh
+COPY ./src/patch-pwa-manifest.mjs /usr/local/lib/codebox/patch-pwa-manifest.mjs
+RUN sudo chmod +x /usr/local/lib/codebox/codebox-entrypoint.sh
 ENV ENTRYPOINTD=/home/coder/entrypoint.d
 COPY ./src/docker-entrypoint.sh /usr/local/lib/codebox/docker-entrypoint.sh
 RUN sudo chown root:root /usr/local/lib/codebox/docker-entrypoint.sh \
   && sudo chmod 0755 /usr/local/lib/codebox/docker-entrypoint.sh
-# Startup hooks run as children and cannot refresh the parent's groups for code-server.
-# Refresh Docker socket groups first, then delegate to the base entrypoint and its hooks.
+# Refresh groups and require successful codebox setup before the base entrypoint runs.
+# Keep the base entrypoint unchanged: it still owns custom hooks and code-server launch.
 ENTRYPOINT ["/usr/local/lib/codebox/docker-entrypoint.sh", "--bind-addr", "0.0.0.0:8080", "."]
 
 # Configure GIT

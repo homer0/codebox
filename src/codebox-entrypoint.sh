@@ -190,7 +190,7 @@ sudo sed -i "s/<\/head>/$NEW_TAGS/" $TPL
 PWA_MANIFEST_PATH="/home/coder/_tmp-manifest.json"
 VSCODE_ROUTES="/usr/lib/code-server/out/node/routes/vscode.js"
 codeboxcli get-pwa-manifest > $PWA_MANIFEST_PATH
-sudo env PATH="$PATH" node /home/coder/entrypoint.d/patch-pwa-manifest.mjs $PWA_MANIFEST_PATH $VSCODE_ROUTES
+sudo env PATH="$PATH" node /usr/local/lib/codebox/patch-pwa-manifest.mjs $PWA_MANIFEST_PATH $VSCODE_ROUTES
 rm $PWA_MANIFEST_PATH
 
 

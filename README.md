@@ -39,12 +39,6 @@ With code-server, you get a browser based VSCode, and this image adds SSH suppor
     - [Isolated image workflow](#isolated-image-workflow)
     - [Recorded verification](#recorded-verification)
   - 🛠 [Dev configuration](#-dev-configuration)
-- 👾 [What comes next?](#-what-comes-next)
-  - [Better organization of the CLI app](#better-organization-of-the-cli-app)
-  - [Custom configuration for .git](#custom-configuration-for-git)
-  - [oh-my-zsh custom theme](#oh-my-zsh-custom-theme)
-  - [Better entrypoint](#better-entrypoint)
-  - [nginx sites](#nginx-sites)
 
 ## ⚠️ Disclaimer
 
@@ -55,6 +49,8 @@ I suck at Docker and Bash, so, some of the code may be a bit messy, and it may n
 Since there are a lot of things to configure, and part of the configuration requires files, I decided to avoid splitting things into environment vars and volumes, and just use a readonly volume for the whole configuration.
 
 Deployment settings, such as project mounts, Docker socket access, and host-path environment variables, belong in the Compose file or Docker command that creates codebox.
+
+At startup, codebox prepares its runtime UID and optional Docker socket groups, refreshes process groups, and runs codebox setup as the runtime user. If setup exits with an error, startup stops without launching the base entrypoint or code-server. On success, codebox hands control to the unchanged base image entrypoint, which runs any additional `ENTRYPOINTD` hooks and launches code-server with its normal process handling. Codebox's own setup and PWA helper live outside the hooks directory, so they do not run twice.
 
 Mount your setup directory read-only at `/home/coder/.codebox/setup`. It must contain `config.yaml` with a nonempty `ssh.authorized-keys` list and the referenced public-key files in `ssh-keys/`. Outbound private keys are optional and selected independently through SSH client hosts. Also attach a dedicated writable host-key volume at `/var/lib/codebox/ssh-host-keys`; see [persistent server identity](#persistent-server-identity).
 
@@ -707,7 +703,7 @@ Complete this lifecycle checklist using only the disposable source files:
 
 | Scenario                     | Action and expected result                                                                                                                                                                                                                                                 |
 | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Repeated setup               | Run `docker exec -u coder codebox-ssh-verification /bin/zsh -ic /home/coder/entrypoint.d/codebox-entrypoint.sh`. The layout stays flat and the live managed agent PID is reused. Rerunning unlock skips loaded keys and recreates any required legacy public companion.    |
+| Repeated setup               | Run `docker exec -u coder codebox-ssh-verification /bin/zsh -ic /usr/local/lib/codebox/codebox-entrypoint.sh`. The layout stays flat and the live managed agent PID is reused. Rerunning unlock skips loaded keys and recreates any required legacy public companion.      |
 | Inbound rotation/revocation  | Generate a replacement disposable device key outside the setup directory; replace `setup/ssh-keys/device` with its public key and rerun setup. A new connection with the old private key must fail, while the replacement succeeds. Keep at least one valid authorization. |
 | Outbound removal             | Remove `service-two` from the YAML host mapping and rerun setup. Its managed private/public companion files disappear; source files remain untouched.                                                                                                                      |
 | Unrelated state              | Create recognizable dummy `known_hosts`/other files before setup. Confirm they survive rotation and removal. Do not use real host entries or keys.                                                                                                                         |
@@ -790,10 +786,6 @@ Just like oh-my-zsh, it could have a custom `.gitconfig` file in the setup direc
 ### oh-my-zsh custom theme
 
 By default, it uses `oh-my-zsh` default theme, `robbyrussell`, and when you connect via SSH, a modified version of it. But, if you want to use a different theme, you could add something like `codebox-theme` and/or `codebox-theme-ssh` in the setup directory, for the container to use.
-
-### Better entrypoint
-
-The thing I'm doing with the entrypoint is not messy, it's **dark AF**: I use `sed` to inject the execution of a bash file before code-server is started... and then, I used `sed` again to replace the execution of code-server in order to support custom domains.
 
 ### nginx sites
 
