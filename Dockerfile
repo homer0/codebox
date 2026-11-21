@@ -19,6 +19,17 @@ RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends ca-ce
   && sudo apt-get update \
   && sudo apt-get install -y --no-install-recommends docker-ce-cli docker-buildx-plugin docker-compose-plugin
 
+## GitHub CLI from its official Debian repository.
+RUN sudo install -m 0755 -d /etc/apt/keyrings \
+  && sudo curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+    -o /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+  && sudo chmod a+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+  && printf 'deb [arch=%s signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main\n' \
+    "$(dpkg --print-architecture)" \
+    | sudo tee /etc/apt/sources.list.d/github-cli.list >/dev/null \
+  && sudo apt-get update \
+  && sudo apt-get install -y --no-install-recommends gh
+
 ## ngrok (copied from https://dashboard.ngrok.com/get-started/setup/linux)
 RUN curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
   | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \

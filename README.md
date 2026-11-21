@@ -2,7 +2,7 @@
 
 An image based on [code-server](https://hub.docker.com/r/codercom/code-server) with some extra features.
 
-With code-server, you get a browser based VSCode, and this image adds SSH support, oh-my-zsh, fnm, an nginx reverse proxy for custom ports, and Docker CLI and Compose support through the host Docker daemon.
+With code-server, you get a browser based VSCode, and this image adds SSH support, oh-my-zsh, fnm, an nginx reverse proxy for custom ports, GitHub CLI, and Docker CLI and Compose support through the host Docker daemon.
 
 ## ⚠️ Disclaimer
 
@@ -293,7 +293,7 @@ Since you'll me mounting the profile directory too, codebox will only copy the `
 | `/home/coder/.codebox/setup`           | RO     | The setup directory, that contains the SSH keys and the configuration.              |
 | `/var/lib/codebox/ssh-host-keys`       | RW     | Required dedicated server-identity volume; root-only, retained across replacements. |
 | `/home/coder/.local/share/code-server` | RW     | The VSCode profile directory, where all configurations and settings are stored.     |
-| `/home/coder/.config`                  | RW     | Where the code-server configuration is stored                                       |
+| `/home/coder/.config`                  | RW     | Configuration for code-server and tools such as GitHub CLI.                         |
 | `/home/coder/.local/state/zsh`         | RW     | Optional persistent shell history; mount the directory, not the history file.       |
 | `/home/coder/code`                     | RW     | Conventional project mount; choose your own location using the guidance below.      |
 | `/var/run/docker.sock`                 | RW     | Optional host Docker socket; grants codebox control over the host daemon.           |
@@ -394,6 +394,23 @@ Run `docker`, `docker buildx`, and `docker compose` from code-server's integrate
 Containers started through the host Docker daemon publish ports on the host, not inside codebox. Choose unused host ports; codebox's nginx proxy does not automatically reach those services through its own `localhost`.
 
 Socket access gives codebox effective administrator-level control over the Docker host. Only enable it for a trusted box. For project bind mounts and SSH host-path variables, follow [project mount guidance](#project-mounts-when-using-the-host-docker-daemon).
+
+### GitHub CLI
+
+The image includes `gh`, installed from the [official GitHub CLI Debian repository](https://github.com/cli/cli/blob/trunk/docs/install_linux.md). Run it as `coder` from code-server's integrated terminal or over SSH. Authentication is user-managed; credentials are not included in the image and startup does not prompt for login.
+
+To sign in interactively without generating or uploading SSH keys:
+
+```bash
+gh auth login --skip-ssh-key
+gh auth status
+```
+
+Follow the displayed browser login instructions on your own device. GitHub CLI authentication is separate from codebox's incoming SSH authorization and configured outbound SSH identities.
+
+By default, GitHub CLI stores configuration in `/home/coder/.config/gh`, covered by a persistent `/home/coder/.config` mount. If no usable system credential store is available, `gh` falls back to storing its token in a plain-text configuration file. Protect that mount and its backups as credentials; use `gh auth status` to check the storage location. Credentials held in an external system credential store are not preserved merely by mounting `.config`.
+
+The local dev runner recreates its `.config` mount on each `dev:container:run`, so it does not preserve GitHub CLI file-based login across container replacement. Use your own persistent configuration mount when you need that persistence.
 
 ### 🌎 nginx
 
