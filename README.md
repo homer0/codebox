@@ -321,6 +321,7 @@ Since you'll me mounting the profile directory too, codebox will only copy the `
 | `/home/coder/.local/share/code-server` | RW     | The VSCode profile directory, where all configurations and settings are stored.     |
 | `/home/coder/.config`                  | RW     | Configuration for code-server and tools such as GitHub CLI.                         |
 | `/home/coder/.local/state/zsh`         | RW     | Optional persistent shell history; mount the directory, not the history file.       |
+| `/home/coder/.oh-my-zsh/custom.sh`     | RO     | Optional custom zsh configuration, sourced after the bundled aliases.               |
 | `/home/coder/code`                     | RW     | Conventional project mount; choose your own location using the guidance below.      |
 | `/var/run/docker.sock`                 | RW     | Optional host Docker socket; grants codebox control over the host daemon.           |
 
@@ -447,6 +448,28 @@ Let's say you are exposing the port `80` as `8081`, and inside the container, yo
 ### 💻 oh-my-zsh
 
 The container installs and configures [oh-my-zsh](https://ohmyz.sh) as a shell. When you connect via SSH, it uses a different theme that includes the box name as a prefix. History uses a dedicated directory so it can be persisted with an optional volume; see [persistent shell history](#persistent-shell-history).
+
+#### Custom shell configuration
+
+Mount a custom file read-only at `/home/coder/.oh-my-zsh/custom.sh` to add aliases, functions, or shell settings without replacing `.zshrc`. Codebox sources it after the bundled aliases, so your definitions can override them. A missing file is ignored.
+
+Create the host file before starting the box and make it readable by `coder`. For example, merge this fragment into the Compose file that creates codebox:
+
+```yaml
+services:
+  codebox:
+    volumes:
+      - type: bind
+        source: ./custom.sh
+        target: /home/coder/.oh-my-zsh/custom.sh
+        read_only: true
+        bind:
+          create_host_path: false
+```
+
+Use zsh-compatible syntax. The file is sourced into the current shell, not run as a separate Bash script. It loads in SSH and code-server terminal shells and whenever startup or CLI setup sources `.zshrc`, so keep it safe to source repeatedly and avoid interactive prompts or unconditional output. Later `.zshrc` settings, including fnm, locales, and the CLI path, still run afterward.
+
+Only mount trusted configuration: a read-only mount prevents writes to the file, not execution of its contents. Open a new shell or run `reload` to load changes in an existing shell.
 
 ### 🧩 fnm
 
@@ -717,10 +740,6 @@ For now, this is my _wishlist_:
 ### Better organization of the CLI app
 
 This thing with the `package*` files in the root, but then moved to the CLI folder, is a bit of a mess, and if you don't read this doc, is not intuitive.
-
-### Custom configuration for oh-my-zsh
-
-Right now, it copies a few of my aliases, and that's all, but it would be great (and not complicated at all), to put some `.sh` file in the setup directory, and then include it in the `.zshrc` file.
 
 ### Custom configuration for .git
 
