@@ -17,10 +17,13 @@ import { runSetupFiles } from '../src/setup-files.js';
 
 describe('box setup files', () => {
   const FILE_MODE = 0o600;
+  const SCRIPT_MODE = 0o755;
   const INVALID_NON_STRING = 42;
   const TOOL_TIMEOUT = 10000;
   let directory;
   let trace;
+  let binaries;
+  let sudoLog;
 
   const createScript = async (name, contents) => {
     const filename = path.join(directory, name);
@@ -29,10 +32,44 @@ describe('box setup files', () => {
   };
   const appendTrace = (value) => `printf '%s\\n' '${value}' >> '${trace}'\n`;
 
+  /** Test sudo dispatch in a child with a fake sudo; never elevate the test process. */
+  const executeWithSudo = (options) =>
+    spawnSync(
+      process.execPath,
+      [
+        '--input-type=module',
+        '-e',
+        `import { runSetupFiles } from ${JSON.stringify(new URL('../src/setup-files.js', import.meta.url).href)};
+         await runSetupFiles(JSON.parse(process.env.TEST_SETUP_FILES));`,
+      ],
+      {
+        timeout: TOOL_TIMEOUT,
+        encoding: 'utf8',
+        env: {
+          PATH: `${binaries}:/usr/bin:/bin`,
+          TEST_SUDO_LOG: sudoLog,
+          TEST_SUDO_STATUS: options.sudoStatus || '0',
+          TEST_SETUP_FILES: JSON.stringify(options.files),
+        },
+      },
+    );
+
   beforeEach(async () => {
     directory = await mkdtemp('/tmp/codebox-setup-files-');
     trace = path.join(directory, 'trace');
     await writeFile(trace, '');
+    binaries = path.join(directory, 'bin');
+    sudoLog = path.join(directory, 'sudo-trace');
+    await mkdir(binaries);
+    await writeFile(sudoLog, '');
+    const sudo = path.join(binaries, 'sudo');
+    await writeFile(
+      sudo,
+      '#!/bin/sh\nprintf "arg=%s\\n" "$@" >> "$TEST_SUDO_LOG"\n' +
+        'if [ "$TEST_SUDO_STATUS" != 0 ]; then exit "$TEST_SUDO_STATUS"; fi\n' +
+        '[ "$1" = -- ] || exit 1\nshift\nexec "$@"\n',
+    );
+    await chmod(sudo, SCRIPT_MODE);
   });
 
   afterEach(async () => {
@@ -132,6 +169,68 @@ describe('box setup files', () => {
       /failure\.sh \(exit 23\)/u,
     );
     assert.equal(await readFile(trace, 'utf8'), 'first\nfailed\n');
+  });
+
+  it('mixes plain and sudo scripts in order without interpolating paths', async () => {
+    const first = await createScript('first.sh', appendTrace('user'));
+    const privileged = await createScript('root script; literal.sh', appendTrace('sudo'));
+    const last = await createScript('last.sh', appendTrace('user again'));
+    const result = executeWithSudo({ files: [first, `sudo:${privileged}`, last] });
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(await readFile(trace, 'utf8'), 'user\nsudo\nuser again\n');
+    assert.equal(
+      await readFile(sudoLog, 'utf8'),
+      `arg=--\narg=/bin/bash\narg=--\narg=${privileged}\n`,
+    );
+    assert.ok(result.stdout.includes(`sudo:${privileged}`));
+  });
+
+  it('rejects invalid sudo paths before executing any scripts', async () => {
+    const first = await createScript('first.sh', appendTrace('must not run'));
+    for (const invalid of [
+      'sudo:',
+      'sudo:relative.sh',
+      'sudo:~/script.sh',
+      'sudo:sudo:/script.sh',
+      `sudo:${directory}/script.txt`,
+      `sudo:${directory}/line\nbreak.sh`,
+      `sudo:${directory}/null\0byte.sh`,
+    ]) {
+      const result = executeWithSudo({ files: [first, invalid] });
+      assert.equal(result.status, 1);
+      assert.match(result.stderr, /absolute paths to .sh files/u);
+    }
+    const folder = path.join(directory, 'folder.sh');
+    await mkdir(folder);
+    for (const invalid of [`sudo:${directory}/missing.sh`, `sudo:${folder}`]) {
+      const result = executeWithSudo({ files: [first, invalid] });
+      assert.equal(result.status, 1);
+      assert.match(result.stderr, /Cannot read box.setup-files script/u);
+    }
+    assert.equal(await readFile(trace, 'utf8'), '');
+    assert.equal(await readFile(sudoLog, 'utf8'), '');
+  });
+
+  it('stops on sudo failure without executing that script or later scripts', async () => {
+    const first = await createScript('first.sh', appendTrace('first'));
+    const privileged = await createScript('root.sh', appendTrace('must not run'));
+    const last = await createScript('last.sh', appendTrace('must not run'));
+    const result = executeWithSudo({
+      files: [first, `sudo:${privileged}`, last],
+      sudoStatus: '1',
+    });
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /root\.sh \(exit 1\)/u);
+    assert.equal(await readFile(trace, 'utf8'), 'first\n');
+  });
+
+  it('reports a sudo script failure and skips later scripts', async () => {
+    const privileged = await createScript('root.sh', `${appendTrace('failed')}exit 23\n`);
+    const last = await createScript('last.sh', appendTrace('must not run'));
+    const result = executeWithSudo({ files: [`sudo:${privileged}`, last] });
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /root\.sh \(exit 23\)/u);
+    assert.equal(await readFile(trace, 'utf8'), 'failed\n');
   });
 
   it('reports scripts terminated by a signal', async () => {

@@ -5,12 +5,18 @@ import os from 'node:os';
 import path from 'node:path';
 import { getConfig } from './fns.js';
 
+const SUDO_PREFIX = 'sudo:';
+
 /** Validate the entire list before any trusted setup script can make changes. */
 const validateSetupFiles = async (files) => {
   if (!Array.isArray(files)) throw new Error('box.setup-files must be an array');
-  for (const filename of files) {
+  const scripts = [];
+  for (const entry of files) {
+    if (typeof entry !== 'string')
+      throw new Error('box.setup-files entries must be absolute paths to .sh files');
+    const runAsRoot = entry.startsWith(SUDO_PREFIX);
+    const filename = runAsRoot ? entry.slice(SUDO_PREFIX.length) : entry;
     if (
-      typeof filename !== 'string' ||
       !path.isAbsolute(filename) ||
       !filename.endsWith('.sh') ||
       /[\r\n\0]/u.test(filename)
@@ -18,24 +24,28 @@ const validateSetupFiles = async (files) => {
       throw new Error('box.setup-files entries must be absolute paths to .sh files');
     }
     try {
-      const entry = await stat(filename);
-      if (!entry.isFile()) throw new Error('not a regular file');
+      const file = await stat(filename);
+      if (!file.isFile()) throw new Error('not a regular file');
       await access(filename, constants.R_OK);
     } catch (error) {
       throw new Error(`Cannot read box.setup-files script: ${filename}`, {
         cause: error,
       });
     }
+    scripts.push({ filename, runAsRoot });
   }
+  return scripts;
 };
 
 /**
  * Run Bash directly, preserving output and argument boundaries without shell
  * interpolation.
  */
-const runScript = (filename) =>
+const runScript = ({ filename, runAsRoot }) =>
   new Promise((resolve, reject) => {
-    const child = spawn('/bin/bash', ['--', filename], { stdio: 'inherit' });
+    const command = runAsRoot ? 'sudo' : '/bin/bash';
+    const args = runAsRoot ? ['--', '/bin/bash', '--', filename] : ['--', filename];
+    const child = spawn(command, args, { stdio: 'inherit' });
     child.once('error', (error) => {
       reject(new Error(`Unable to start setup script: ${filename}`, { cause: error }));
     });
@@ -57,15 +67,17 @@ const runScript = (filename) =>
  * rolled back.
  */
 export const runSetupFiles = async (files) => {
-  await validateSetupFiles(files);
-  for (const filename of files) {
+  const scripts = await validateSetupFiles(files);
+  for (const script of scripts) {
     // oxlint-disable-next-line no-console -- intentional startup progress output
-    console.log(`== running setup script: ${filename}`);
-    await runScript(filename);
+    console.log(
+      `== running setup script: ${script.runAsRoot ? SUDO_PREFIX : ''}${script.filename}`,
+    );
+    await runScript(script);
   }
 };
 
-/** Run configured scripts as coder, with privilege escalation left to each script. */
+/** Run setup as coder, elevating only scripts explicitly marked with the sudo: prefix. */
 export const runConfiguredSetupFiles = async () => {
   if (os.userInfo().username !== 'coder')
     throw new Error('Setup scripts must run as coder, not through sudo');

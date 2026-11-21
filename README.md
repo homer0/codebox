@@ -43,8 +43,10 @@ box:
   packages:
     - ffmpeg
   # Absolute container paths to Bash scripts, run in order after packages.
+  # Prefix a path with sudo: to run the entire script as root.
   setup-files:
     - /home/coder/.codebox/setup/scripts/tools.sh
+    - sudo:/home/coder/.codebox/setup/scripts/system-tools.sh
 # Specific options for code-server
 code-server:
   # If you reverse proxy it trough a subdomain, like `codebox.homer0.com`, you
@@ -111,17 +113,18 @@ Use `box.setup-files` to run `.sh` files after `box.packages` finishes successfu
 setup/
 |-- config.yaml
 |-- scripts/
-|   `-- tools.sh
+|   |-- tools.sh
+|   `-- system-tools.sh
 `-- ssh-keys/
 ```
 
-On every startup, codebox validates the entire list before running any setup script. Each entry must name a readable regular file with a `.sh` suffix; symlinks to regular files are supported. Files do not need executable permission. Invalid entries, missing files, or unreadable files stop setup without running any scripts, though package installation has already happened.
+On every startup, codebox validates the entire list before running any setup script. An optional `sudo:` prefix is stripped before path validation. Each path must name a regular `.sh` file readable by `coder`, including scripts marked with `sudo:`; symlinks to regular files are supported. Files do not need executable permission. Invalid entries, missing files, or unreadable files stop setup without running any scripts, though package installation has already happened.
 
-Scripts run sequentially in separate Bash processes as `coder`, with the container environment and startup working directory. They may use `sudo` when required. Environment changes and `cd` inside one script do not affect later scripts or codebox. Scripts also run when `box.packages` is empty.
+Scripts run sequentially in separate Bash processes. Plain paths run as `coder` with the container environment and startup working directory; `sudo:<filepath>` runs the entire script as root through `sudo -- /bin/bash -- <filepath>`, using sudo's normal environment filtering. Scripts are responsible for their own file ownership and permissions; codebox does not adjust them afterward. Plain scripts may also call `sudo` themselves when needed. Environment changes and `cd` inside one script do not affect later scripts or codebox. Scripts also run when `box.packages` is empty.
 
 Write scripts to be safe to rerun, avoid interactive prompts, and exit nonzero on failure. Codebox stops at the first failed script, reports its path and exit status or signal, and leaves SSH stopped. Previous package/script changes are not rolled back. Fix the script or configuration and restart the box. Bash uses its normal error handling; add `set -e` or explicit checks in scripts that should stop on a failed command.
 
-Only configure trusted scripts: they run with the box user's permissions, can use passwordless `sudo`, and can access any mounted Docker socket and credentials. The script list and script contents must remain stable while setup runs. Codebox validates paths, not script contents, and does not automatically migrate, copy, or modify the scripts.
+Only configure trusted scripts: plain scripts run with the box user's permissions and can use passwordless `sudo`, while `sudo:` scripts run as root. Scripts can access mounted Docker sockets and credentials. The script list and script contents must remain stable while setup runs. Codebox validates paths, not script contents, and does not automatically migrate, copy, or modify the scripts.
 
 ### SSH credentials
 
