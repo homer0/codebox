@@ -75,6 +75,12 @@ if [[ -n $BOX_PACKAGES ]]; then
   fi
 fi
 
+# Scripts run only after packages succeed and before SSH is restarted.
+if ! codeboxcli run-setup-files; then
+  echo "Box setup scripts failed; SSH remains stopped"
+  exit 1
+fi
+
 # Update oh-my-zsh theme
 sed -i "s/{{CODEBOX_NAME}}/$CODEBOX_NAME/" ~/.oh-my-zsh/themes/robbyrussell-ssh.zsh-theme
 

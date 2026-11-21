@@ -10,6 +10,7 @@ export const DEFAULT_CODEBOX_CONFIG = {
   icon: 'dark',
   box: {
     packages: [],
+    'setup-files': [],
   },
   node: {
     'default-version': 26,
