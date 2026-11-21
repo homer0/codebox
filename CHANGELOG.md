@@ -1,3 +1,31 @@
+# [4.0.0](https://github.com/homer0/codebox/compare/3.2.0...4.0.0) (2026-11-21)
+
+### Bug Fixes
+
+* install the atomic library required by node on arm64 ([bf0ca35](https://github.com/homer0/codebox/commit/bf0ca3559b2163ff5470dfea58043f5614addd8c))
+* preserve user ownership when creating history directories ([b91e5d6](https://github.com/homer0/codebox/commit/b91e5d69e93d6b90c815dcff34b06a6a4dad7e29))
+* recover ssh startup from stale daemon pid files ([37fa564](https://github.com/homer0/codebox/commit/37fa564c85d2c794a12022b7df1cc83429c88dd5))
+* require successful setup before the base entrypoint ([5a3c53d](https://github.com/homer0/codebox/commit/5a3c53d7a149970631a5ecccb2d244904cae1447))
+* update dependencies and resolve security advisories ([f72e22c](https://github.com/homer0/codebox/commit/f72e22cc7e2d2a191e3b269323dc60e44eb4357d))
+
+### Features
+
+* add host-backed docker support ([53ab59c](https://github.com/homer0/codebox/commit/53ab59c54b1873a7b3b5b7ae0b55564b8c83738a))
+* add shared ssh agent and interactive key unlock ([93a06bd](https://github.com/homer0/codebox/commit/93a06bd39fe92160f7a3e42cdb069b39dac0d0d4))
+* install github cli and document authentication ([b0da231](https://github.com/homer0/codebox/commit/b0da23194052a2349d384c7d4d7983adcd7a8ffd))
+* install managed ssh credentials and enforce key-only access ([680f455](https://github.com/homer0/codebox/commit/680f4550deb40395f770c6aeef8da827e96de75d))
+* persist ssh host identity in a dedicated volume ([ac036d5](https://github.com/homer0/codebox/commit/ac036d50c0e94cbe0536b4254acdcbacfaf8b172))
+* run configured setup scripts after package installation ([10304a5](https://github.com/homer0/codebox/commit/10304a5045aebbf553b345a99248dd876060f196))
+* source optional custom zsh configuration ([811642c](https://github.com/homer0/codebox/commit/811642c0193d1530452efffe43c3123203075d88))
+* support persistent zsh history with an optional volume ([b9daf8a](https://github.com/homer0/codebox/commit/b9daf8a79290b5a78fd9dafb93be907af1c960dd))
+* support sudo-prefixed setup scripts ([6e5a081](https://github.com/homer0/codebox/commit/6e5a0812111ceab9e623e2206347c3692be843e9))
+* update preinstalled node versions and default to 26 ([d6c6b8c](https://github.com/homer0/codebox/commit/d6c6b8ca90253afbcc8f253f12b083c27c31bbdc))
+
+### BREAKING CHANGES
+
+* Node 20 is no longer preinstalled; the image includes
+  Node 22, 24, and 26, with the default being 26.
+
 # [3.2.0](https://github.com/homer0/codebox/compare/3.1.0...3.2.0) (2026-07-28)
 
 ### Features
