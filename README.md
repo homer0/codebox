@@ -2,7 +2,7 @@
 
 An image based on [code-server](https://hub.docker.com/r/codercom/code-server) with some extra features.
 
-With code-server, you get a browser based VSCode, and this image adds SSH support, oh-my-zsh, fnm, an nginx reverse proxy for custom ports, and a few more features.
+With code-server, you get a browser based VSCode, and this image adds SSH support, oh-my-zsh, fnm, an nginx reverse proxy for custom ports, and Docker CLI and Compose support through the host Docker daemon.
 
 ## ⚠️ Disclaimer
 
@@ -11,6 +11,8 @@ I suck at Docker and Bash, so, some of the code may be a bit messy, and it may n
 ## 🍿 Usage
 
 Since there are a lot of things to configure, and part of the configuration requires files, I decided to avoid splitting things into environment vars and volumes, and just use a readonly volume for the whole configuration.
+
+Deployment settings, such as project mounts, Docker socket access, and host-path environment variables, belong in the Compose file or Docker command that creates codebox.
 
 Mount your setup directory read-only at `/home/coder/.codebox/setup`. It must contain `config.yaml` with a nonempty `ssh.authorized-keys` list and the referenced public-key files in `ssh-keys/`. Outbound private keys are optional and selected independently through SSH client hosts. Also attach a dedicated writable host-key volume at `/var/lib/codebox/ssh-host-keys`; see [persistent server identity](#persistent-server-identity).
 
@@ -91,7 +93,12 @@ ssh:
   # variables that SSH users need, because their values will be readable there.
   env:
     - MY_APP_TOKEN
+    # If project Compose files use this host-path variable over SSH, define its
+    # value in codebox's container environment and forward it here.
+    - HOST_PROJECTS_PATH
 ```
+
+For the `HOST_PROJECTS_PATH` example and its deployment configuration, see [passing the host path through an environment variable](#option-2-pass-the-host-path-through-an-environment-variable).
 
 ### SSH credentials
 
@@ -287,7 +294,62 @@ Since you'll me mounting the profile directory too, codebox will only copy the `
 | `/var/lib/codebox/ssh-host-keys`       | RW     | Required dedicated server-identity volume; root-only, retained across replacements. |
 | `/home/coder/.local/share/code-server` | RW     | The VSCode profile directory, where all configurations and settings are stored.     |
 | `/home/coder/.config`                  | RW     | Where the code-server configuration is stored                                       |
-| `/home/coder/code`                     | RW     | The directory where you'll create your projects.                                    |
+| `/home/coder/code`                     | RW     | Conventional project mount; choose your own location using the guidance below.      |
+| `/var/run/docker.sock`                 | RW     | Optional host Docker socket; grants codebox control over the host daemon.           |
+
+### Project mounts when using the host Docker daemon
+
+Codebox provides Docker CLI and Compose for use with the host Docker daemon, not a daemon running inside the box. To enable access, mount the host Docker socket at `/var/run/docker.sock` in codebox. Project storage and bind-mount paths remain your responsibility.
+
+You choose where to store and mount your projects. When Docker inside codebox uses the host daemon, bind-mount source paths refer to the **Docker host**, not codebox's filesystem. Choose one of these approaches for projects that use Docker bind mounts.
+
+#### Option 1: Use a matching neutral path
+
+Store projects in a neutral directory such as `/workspace` on the host and mount it at `/workspace` inside codebox. Open projects at that path in code-server or SSH sessions. For example, `/workspace/my-app` must refer to the same project on both sides, so a Compose mount such as `.:/app` resolves to the correct host directory.
+
+Neither the host username nor codebox's `coder` user needs to change. Configure directory permissions so the relevant users can access the files. Mounting a host home directory at `/workspace` inside codebox does not provide matching paths.
+
+#### Option 2: Pass the host path through an environment variable
+
+Keep different host and codebox paths, and use an environment variable for project bind-mount sources. For example, mount the host's `/home/server-user/projects` at `/home/coder/code` inside codebox.
+
+In the Compose file that creates **codebox**, define the host location in the container environment. Merge this fragment into your codebox service alongside its other settings:
+
+```yaml
+services:
+  codebox:
+    environment:
+      HOST_PROJECTS_PATH: /home/server-user/projects
+    volumes:
+      - /home/server-user/projects:/home/coder/code
+```
+
+In codebox's setup `config.yaml`, also add the variable name to `ssh.env`, preserving your existing SSH configuration and environment entries:
+
+```yaml
+ssh:
+  env:
+    - HOST_PROJECTS_PATH
+```
+
+Both steps are required when running Compose over SSH: define the variable in codebox's container environment **and** include its name in `ssh.env`. Otherwise, the SSH session may use the fallback path and ask the host daemon to mount the wrong directory. Restart codebox after changing its setup, recreate it after changing its container environment, and open a new SSH session.
+
+In the **project's** Compose file, reference the host path:
+
+```yaml
+services:
+  app:
+    volumes:
+      - ${HOST_PROJECTS_PATH:-.}/my-app:/app
+```
+
+Inside codebox, this mounts `/home/server-user/projects/my-app` from the Docker host, even when you run Compose from `/home/coder/code/my-app`. Outside codebox, when the variable is unset, the fallback is `./my-app`, relative to the Compose file's directory. Choose the variable's base directory and the appended path to suit your project layout; the general pattern is `${SOME_ENV_VAR:-.}/some/path`.
+
+This is explicit configuration, not automatic path translation. Other bind mounts and commands such as `docker run -v "$PWD":/app ...` must also use host-visible source paths. Docker named volumes do not have this path-matching requirement.
+
+Using the host daemon also means published ports belong to the Docker host, not codebox's `localhost`. Access to the Docker socket gives codebox processes effective administrator-level control over that host; only enable it for a trusted box.
+
+See Docker's [bind-mount documentation](https://docs.docker.com/engine/storage/bind-mounts/) for the host-path behavior.
 
 ## 🚦 Ports
 
@@ -298,6 +360,18 @@ Since you'll me mounting the profile directory too, codebox will only copy the `
 | `8080` | For the code-server         |
 
 ## 🚀 Other features
+
+### Docker
+
+Docker CLI and Compose are installed in the image. Mounting the host Docker socket is optional: without it or another configured daemon connection, the commands cannot manage containers, but codebox otherwise works normally.
+
+Mount the host socket read/write at `/var/run/docker.sock` (for example, `/var/run/docker.sock:/var/run/docker.sock`). At startup, codebox grants its runtime user access through the socket's numeric group and refreshes process groups before starting code-server. It does not change the host socket's ownership or permissions. A mounted path that is not a Unix socket, or a failure to configure group access, stops startup with an error.
+
+Run `docker`, `docker buildx`, and `docker compose` from code-server's integrated terminal or over SSH using the mounted host Docker socket. Images, build cache, containers, networks, and named volumes belong to the host daemon and are shared with its other Docker clients. No Docker-in-Docker daemon is needed.
+
+Containers started through the host Docker daemon publish ports on the host, not inside codebox. Choose unused host ports; codebox's nginx proxy does not automatically reach those services through its own `localhost`.
+
+Socket access gives codebox effective administrator-level control over the Docker host. Only enable it for a trusted box. For project bind mounts and SSH host-path variables, follow [project mount guidance](#project-mounts-when-using-the-host-docker-daemon).
 
 ### 🌎 nginx
 
@@ -541,6 +615,11 @@ names:
 volumes:
   # Keep this named volume when replacing this box; choose another name for a different box.
   ssh-host-keys: codebox-ssh-host-keys
+docker:
+  # Grants the dev box control over the host daemon; set false to omit the socket.
+  enabled: true
+  # Absolute host socket path; change for rootless Docker or a custom installation.
+  socket: /var/run/docker.sock
 ports:
   # 80
   http: 4580
@@ -557,6 +636,8 @@ paths:
   setup: /dev/box
   code: /
 ```
+
+Local development enables host Docker access by default. Set `docker.enabled` to `false` in `dev/dev.yaml` to disable it. When enabled, `docker.socket` must point to an existing Unix socket on the machine running the dev script; it is mounted at `/var/run/docker.sock` inside codebox. The runner validates these settings before clearing `.codebox-mount`. It does not change project mount paths or define host-path variables for your projects; follow the [project mount guidance](#project-mounts-when-using-the-host-docker-daemon).
 
 ## 👾 What comes next?
 

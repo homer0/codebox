@@ -7,6 +7,18 @@ FROM codercom/code-server:4.130.0-debian
 RUN sudo apt update && sudo apt install openssh-server nginx locales-all jq unzip libatomic1 -y \
   && sudo rm -f /etc/ssh/ssh_host_*_key /etc/ssh/ssh_host_*_key.pub
 
+## Docker clients only; the daemon stays on the host.
+RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends ca-certificates curl \
+  && sudo install -m 0755 -d /etc/apt/keyrings \
+  && sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc \
+  && sudo chmod a+r /etc/apt/keyrings/docker.asc \
+  && . /etc/os-release \
+  && printf 'Types: deb\nURIs: https://download.docker.com/linux/debian\nSuites: %s\nComponents: stable\nArchitectures: %s\nSigned-By: /etc/apt/keyrings/docker.asc\n' \
+    "$VERSION_CODENAME" "$(dpkg --print-architecture)" \
+    | sudo tee /etc/apt/sources.list.d/docker.sources >/dev/null \
+  && sudo apt-get update \
+  && sudo apt-get install -y --no-install-recommends docker-ce-cli docker-buildx-plugin docker-compose-plugin
+
 ## ngrok (copied from https://dashboard.ngrok.com/get-started/setup/linux)
 RUN curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
   | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
@@ -40,6 +52,12 @@ COPY ./src/codebox-entrypoint.sh /home/coder/entrypoint.d/codebox-entrypoint.sh
 COPY ./src/patch-pwa-manifest.mjs /home/coder/entrypoint.d/patch-pwa-manifest.mjs
 RUN sudo chmod +x /home/coder/entrypoint.d/codebox-entrypoint.sh
 ENV ENTRYPOINTD=/home/coder/entrypoint.d
+COPY ./src/docker-entrypoint.sh /usr/local/lib/codebox/docker-entrypoint.sh
+RUN sudo chown root:root /usr/local/lib/codebox/docker-entrypoint.sh \
+  && sudo chmod 0755 /usr/local/lib/codebox/docker-entrypoint.sh
+# Startup hooks run as children and cannot refresh the parent's groups for code-server.
+# Refresh Docker socket groups first, then delegate to the base entrypoint and its hooks.
+ENTRYPOINT ["/usr/local/lib/codebox/docker-entrypoint.sh", "--bind-addr", "0.0.0.0:8080", "."]
 
 # Configure GIT
 COPY ./src/git/.gitconfig /home/coder/.gitconfig
