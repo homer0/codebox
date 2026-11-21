@@ -14,14 +14,16 @@
 
 ## Commands that matter
 
-- Use Node 24 (`.node-version`) and pnpm 11.17.0 (`package.json`).
-- `pnpm run lint:all` checks all JavaScript. `pnpm run lint` runs staged-file checks through `lint-staged`.
-- `pnpm test` is a placeholder command; do not represent it as a test suite.
+- Use Node 26 (`.node-version`) and pnpm 12.17.0 (`package.json`).
+- `pnpm run lint:all` runs Oxlint. `pnpm run lint` runs staged-file checks through `lint-staged`.
+- `pnpm run format:all` formats the repo with Oxfmt; `pnpm run format:check` checks formatting.
+- `pnpm run types:check` type-checks the root TypeScript configuration files without emitting output.
+- `pnpm test` runs the Node test suite in `src/cli/test/`, including mocked Docker startup checks; it does not build an image or verify actual Docker connectivity.
 - `pnpm run dev:image:build` builds the Docker image after deleting its configured container and image. `pnpm run dev:container:run` recreates the configured container. `pnpm run dev:all` performs both.
 
 ## Conventions that are easy to miss
 
-- JavaScript uses ESM (`"type": "module"`), two-space indentation, and the shared `@homer0` ESLint/Prettier configurations.
+- JavaScript uses ESM (`"type": "module"`), two-space indentation, and the shared `@homer0` Oxlint/Oxfmt configurations.
 - Keep Docker image changes aligned with the source asset paths copied by `Dockerfile`.
 - Commit messages are checked with Conventional Commits by Husky.
 

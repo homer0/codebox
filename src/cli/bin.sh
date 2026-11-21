@@ -12,6 +12,14 @@ if [ "$NODE_VERSION" != "$NODE_VERSION_FILE" ]; then
   fnm use $NODE_VERSION_FILE
 fi
 
+# Keep interactive unlock attached to the terminal instead of capturing its output.
+if [ "$1" = "unlock-ssh-keys" ]; then
+  node "${CODEBOX_CLI_PATH}/src/index.js" "$@"
+  exit $?
+fi
+
 # Output the JS value using print to avoid new lines and extra spaces.
 OUTPUT=$(node "${CODEBOX_CLI_PATH}/src/index.js" "$@")
-printf "%s" $OUTPUT
+NODE_EXIT_STATUS=$?
+printf "%s" "$OUTPUT"
+exit $NODE_EXIT_STATUS

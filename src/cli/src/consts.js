@@ -1,8 +1,8 @@
 import path from 'path';
 
 /**
- * The default values for the box configuration. All of these values can be
- * overridden by a `config.yaml` in the setup directory.
+ * The default values for the box configuration. All of these values can be overridden by
+ * a `config.yaml` in the setup directory.
  */
 export const DEFAULT_CODEBOX_CONFIG = {
   name: 'codebox',
@@ -10,9 +10,10 @@ export const DEFAULT_CODEBOX_CONFIG = {
   icon: 'dark',
   box: {
     packages: [],
+    'setup-files': [],
   },
   node: {
-    'default-version': 24,
+    'default-version': 26,
   },
   ssh: {
     env: [],
@@ -25,9 +26,8 @@ export const DEFAULT_CODEBOX_CONFIG = {
   },
 };
 /**
- * The default values for the code-server configuration. This configuration
- * is generated based on the codebox configuration, so this format is never
- * exposed to the setup.
+ * The default values for the code-server configuration. This configuration is generated
+ * based on the codebox configuration, so this format is never exposed to the setup.
  */
 export const DEFAULT_CODESERVER_CONFIG = {
   'bind-addr': '0.0.0.0:8080',
@@ -35,9 +35,8 @@ export const DEFAULT_CODESERVER_CONFIG = {
   cert: false,
 };
 /**
- * The default values for the PWA manifest. This configuration is generated
- * based on the codebox configuration, that's why things like the icons are
- * not defined.
+ * The default values for the PWA manifest. This configuration is generated based on the
+ * codebox configuration, that's why things like the icons are not defined.
  */
 export const DEFAULT_PWA_MANIFEST = {
   name: 'codebox',
@@ -47,13 +46,9 @@ export const DEFAULT_PWA_MANIFEST = {
   description: 'Development box',
   icons: [],
 };
-/**
- * The path where the setup directory is mounted in the container.
- */
+/** The path where the setup directory is mounted in the container. */
 export const BOX_SETUP_PATH = path.join('/', 'home', 'coder', '.codebox', 'setup');
-/**
- * A dictionary of the known (possible) paths inside the the setup directory.
- */
+/** A dictionary of the known (possible) paths inside the the setup directory. */
 export const BOX_SETUP_SUBPATHS = {
   config: 'config.yaml',
   'ssh-keys': 'ssh-keys',

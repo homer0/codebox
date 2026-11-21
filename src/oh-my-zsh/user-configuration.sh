@@ -13,3 +13,7 @@ alias gdf="git dsf"
 gpl(){
   git checkout $1; git pull -p; git branch --merged | grep -v \* | grep -v master | grep -v main | xargs -n1 git branch -d
 }
+
+if [ -f /home/coder/.oh-my-zsh/custom.sh ]; then
+  source /home/coder/.oh-my-zsh/custom.sh
+fi

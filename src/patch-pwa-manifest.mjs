@@ -3,8 +3,8 @@ import { readFile, writeFile } from 'fs/promises';
 /**
  * Replaces code-server's PWA manifest route with codebox's generated manifest.
  *
- * The generated manifest keeps code-server's {{BASE}} placeholder so its asset
- * paths continue to work behind a reverse proxy.
+ * The generated manifest keeps code-server's {{BASE}} placeholder so its asset paths
+ * continue to work behind a reverse proxy.
  */
 const argumentStartIndex = 2;
 const manifestIndentation = 2;

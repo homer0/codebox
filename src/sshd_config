@@ -1,0 +1,17 @@
+# Codebox owns the complete policy: no upstream Include or Match overrides.
+Port 22
+HostKey /var/lib/codebox/ssh-host-keys/ssh_host_ed25519_key
+HostKey /var/lib/codebox/ssh-host-keys/ssh_host_ecdsa_key
+HostKey /var/lib/codebox/ssh-host-keys/ssh_host_rsa_key
+PubkeyAuthentication yes
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+AuthenticationMethods publickey
+AuthorizedKeysFile .ssh/authorized_keys
+
+# Preserve PAM session environment forwarding and standard terminal/SFTP behavior.
+UsePAM yes
+PrintMotd no
+AcceptEnv LANG LC_*
+SetEnv SSH_AUTH_SOCK=/home/coder/.codebox/ssh-agent/agent.sock
+Subsystem sftp internal-sftp

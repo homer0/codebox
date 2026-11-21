@@ -3,7 +3,32 @@ FROM codercom/code-server:4.130.0-debian
 # Install dependencies
 
 ## apt packages
-RUN sudo apt update && sudo apt install openssh-server nginx locales-all jq unzip -y
+# Remove package-generated host keys before this layer is committed.
+RUN sudo apt update && sudo apt install openssh-server nginx locales-all jq unzip libatomic1 -y \
+  && sudo rm -f /etc/ssh/ssh_host_*_key /etc/ssh/ssh_host_*_key.pub
+
+## Docker clients only; the daemon stays on the host.
+RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends ca-certificates curl \
+  && sudo install -m 0755 -d /etc/apt/keyrings \
+  && sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc \
+  && sudo chmod a+r /etc/apt/keyrings/docker.asc \
+  && . /etc/os-release \
+  && printf 'Types: deb\nURIs: https://download.docker.com/linux/debian\nSuites: %s\nComponents: stable\nArchitectures: %s\nSigned-By: /etc/apt/keyrings/docker.asc\n' \
+    "$VERSION_CODENAME" "$(dpkg --print-architecture)" \
+    | sudo tee /etc/apt/sources.list.d/docker.sources >/dev/null \
+  && sudo apt-get update \
+  && sudo apt-get install -y --no-install-recommends docker-ce-cli docker-buildx-plugin docker-compose-plugin
+
+## GitHub CLI from its official Debian repository.
+RUN sudo install -m 0755 -d /etc/apt/keyrings \
+  && sudo curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+    -o /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+  && sudo chmod a+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+  && printf 'deb [arch=%s signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main\n' \
+    "$(dpkg --print-architecture)" \
+    | sudo tee /etc/apt/sources.list.d/github-cli.list >/dev/null \
+  && sudo apt-get update \
+  && sudo apt-get install -y --no-install-recommends gh
 
 ## ngrok (copied from https://dashboard.ngrok.com/get-started/setup/linux)
 RUN curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
@@ -12,6 +37,10 @@ RUN curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
 
 ## oh-my-zsh
 RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+# Keep history in a mountable directory so zsh can replace the file when saving.
+RUN sudo install -d -m 0700 -o coder -g coder /home/coder/.local/state/zsh \
+  && sed -i '1i HISTFILE=/home/coder/.local/state/zsh/history' /home/coder/.zshrc
 
 # Replace oh-my-zsh theme
 COPY ./src/oh-my-zsh/robbyrussell-ssh.zsh-theme /home/coder/.oh-my-zsh/themes/
@@ -34,10 +63,16 @@ RUN rm /home/coder/.fnm-setup-version.sh
 
 # Entrypoint customization
 RUN mkdir /home/coder/entrypoint.d
-COPY ./src/codebox-entrypoint.sh /home/coder/entrypoint.d/codebox-entrypoint.sh
-COPY ./src/patch-pwa-manifest.mjs /home/coder/entrypoint.d/patch-pwa-manifest.mjs
-RUN sudo chmod +x /home/coder/entrypoint.d/codebox-entrypoint.sh
+COPY ./src/codebox-entrypoint.sh /usr/local/lib/codebox/codebox-entrypoint.sh
+COPY ./src/patch-pwa-manifest.mjs /usr/local/lib/codebox/patch-pwa-manifest.mjs
+RUN sudo chmod +x /usr/local/lib/codebox/codebox-entrypoint.sh
 ENV ENTRYPOINTD=/home/coder/entrypoint.d
+COPY ./src/docker-entrypoint.sh /usr/local/lib/codebox/docker-entrypoint.sh
+RUN sudo chown root:root /usr/local/lib/codebox/docker-entrypoint.sh \
+  && sudo chmod 0755 /usr/local/lib/codebox/docker-entrypoint.sh
+# Refresh groups and require successful codebox setup before the base entrypoint runs.
+# Keep the base entrypoint unchanged: it still owns custom hooks and code-server launch.
+ENTRYPOINT ["/usr/local/lib/codebox/docker-entrypoint.sh", "--bind-addr", "0.0.0.0:8080", "."]
 
 # Configure GIT
 COPY ./src/git/.gitconfig /home/coder/.gitconfig
@@ -57,8 +92,14 @@ RUN sudo chsh -s $(which zsh)
 RUN sudo usermod -s $(which zsh) coder
 
 # Setup SSH
-RUN sudo rm -f /etc/ssh/ssh_host_*_key /etc/ssh/ssh_host_*_key.pub
-RUN sudo sed -i "s/#PasswordAuthentication yes/PasswordAuthentication no/" /etc/ssh/sshd_config
+ENV SSH_AUTH_SOCK=/home/coder/.codebox/ssh-agent/agent.sock
+COPY ./src/setup-ssh-host-keys.sh /usr/local/lib/codebox/setup-ssh-host-keys.sh
+RUN command -v mountpoint && command -v flock \
+  && sudo chown root:root /usr/local/lib/codebox/setup-ssh-host-keys.sh \
+  && sudo chmod 0755 /usr/local/lib/codebox/setup-ssh-host-keys.sh \
+  && sudo install -d -m 0700 -o root -g root /var/lib/codebox/ssh-host-keys
+COPY ./src/sshd_config /etc/ssh/sshd_config
+RUN sudo chown root:root /etc/ssh/sshd_config && sudo chmod 0644 /etc/ssh/sshd_config
 RUN echo "session required pam_env.so envfile=/etc/codebox-ssh-environment" | sudo tee -a /etc/pam.d/sshd
 RUN sudo install -m 0600 -o root -g root /dev/null /etc/codebox-ssh-environment
 
