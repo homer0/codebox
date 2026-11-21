@@ -427,13 +427,15 @@ pnpm run dev:all
 Use Node 26, the pinned pnpm version, Python 3, `zsh`, Git, and OpenSSH client/server tools. The tests generate disposable credentials under `/tmp`; the terminal harness uses Python's standard-library `pty` module. They do not need external service accounts or repository key files. The loopback test starts a temporary SSH daemon on an unprivileged local port, using the current local user and disposable authorization.
 
 ```bash
-node --test src/cli/test/*.test.js
+pnpm test
 # Check virtual paths without creating files in the credential directories:
 git check-ignore --no-index -v dev/box/ssh-keys/example-key src/ssh/example-key
 git ls-files --error-unmatch dev/box/ssh-keys/.keep src/ssh/.keep
 ```
 
-`pnpm test` is a placeholder, not this test suite. After JavaScript changes, run the repository formatter before `pnpm run lint:all`; use `pnpm run types:check` for the configured TypeScript checks. Markdown-only changes do not require lint/type checks.
+`pnpm test` runs all Node test files in `src/cli/test/`, including Docker startup checks with mocked system commands and a temporary Unix socket. Those checks do not require a Docker daemon or modify user groups; actual image installation and Docker connectivity require separate integration verification.
+
+After JavaScript changes, run the repository formatter before `pnpm run lint:all`; use `pnpm run types:check` for the configured TypeScript checks. Markdown-only changes do not require lint/type checks.
 
 | Check group             | Evidence                                                                                                                                                                                                                     |
 | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

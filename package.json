@@ -61,7 +61,7 @@
     "format:all": "oxfmt .",
     "format:check": "oxfmt --check",
     "types:check": "tsc --noEmit",
-    "test": "echo \"lol\"",
+    "test": "node --test src/cli/test/*.test.js",
     "dev:setting": "./dev/scripts/settings.js",
     "dev:container:delete": "./dev/scripts/container-delete.sh",
     "predev:container:run": "pnpm run dev:container:delete",

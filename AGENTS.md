@@ -18,7 +18,7 @@
 - `pnpm run lint:all` runs Oxlint. `pnpm run lint` runs staged-file checks through `lint-staged`.
 - `pnpm run format:all` formats the repo with Oxfmt; `pnpm run format:check` checks formatting.
 - `pnpm run types:check` type-checks the root TypeScript configuration files without emitting output.
-- `pnpm test` is a placeholder command; do not represent it as a test suite.
+- `pnpm test` runs the Node test suite in `src/cli/test/`, including mocked Docker startup checks; it does not build an image or verify actual Docker connectivity.
 - `pnpm run dev:image:build` builds the Docker image after deleting its configured container and image. `pnpm run dev:container:run` recreates the configured container. `pnpm run dev:all` performs both.
 
 ## Conventions that are easy to miss
