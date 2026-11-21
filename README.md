@@ -294,8 +294,30 @@ Since you'll me mounting the profile directory too, codebox will only copy the `
 | `/var/lib/codebox/ssh-host-keys`       | RW     | Required dedicated server-identity volume; root-only, retained across replacements. |
 | `/home/coder/.local/share/code-server` | RW     | The VSCode profile directory, where all configurations and settings are stored.     |
 | `/home/coder/.config`                  | RW     | Where the code-server configuration is stored                                       |
+| `/home/coder/.local/state/zsh`         | RW     | Optional persistent shell history; mount the directory, not the history file.       |
 | `/home/coder/code`                     | RW     | Conventional project mount; choose your own location using the guidance below.      |
 | `/var/run/docker.sock`                 | RW     | Optional host Docker socket; grants codebox control over the host daemon.           |
+
+### Persistent shell history
+
+Zsh stores history at `/home/coder/.local/state/zsh/history` in both SSH sessions and code-server's integrated terminals. Codebox sets `HISTFILE` in `.zshrc` before oh-my-zsh loads, so no container environment variable or `ssh.env` entry is needed.
+
+To retain history when replacing the container, mount a dedicated writable directory or named volume at `/home/coder/.local/state/zsh`. For example, merge this fragment into the Compose file that creates codebox:
+
+```yaml
+services:
+  codebox:
+    volumes:
+      - codebox-zsh-history:/home/coder/.local/state/zsh
+volumes:
+  codebox-zsh-history:
+```
+
+Reuse the same volume when replacing the box. Without a mount, history remains in the container's writable layer and is lost when the container is removed. The local dev runner does not add a history mount.
+
+Mount the directory, not an individual `.zsh_history` file: zsh saves history by writing a replacement file and renaming it, which does not work reliably when the file itself is a mount point. A bind-mounted directory must be writable by `coder`; the image prepares the directory with owner-only permissions for new named volumes. Treat history as private data because commands may contain secrets. Use a dedicated history volume for each box rather than sharing your host shell's history file.
+
+For an existing box, close other shell sessions before migrating history. Copy any old `~/.zsh_history` you want to retain to the new directory's `history` file before opening new shells, and ensure the file is owned by `coder` with mode `0600`. Codebox does not migrate the old file automatically.
 
 ### Project mounts when using the host Docker daemon
 
@@ -381,7 +403,7 @@ Let's say you are exposing the port `80` as `8081`, and inside the container, yo
 
 ### 💻 oh-my-zsh
 
-The container installs and configures [oh-my-zsh](https://ohmyz.sh) as a shell. A special detail is that, when you connect via SSH, it uses a different theme that includes the box name as a prefix, other than that, is the default setup.
+The container installs and configures [oh-my-zsh](https://ohmyz.sh) as a shell. When you connect via SSH, it uses a different theme that includes the box name as a prefix. History uses a dedicated directory so it can be persisted with an optional volume; see [persistent shell history](#persistent-shell-history).
 
 ### 🧩 fnm
 
