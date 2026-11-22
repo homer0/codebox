@@ -1,3 +1,13 @@
+# [4.1.0](https://github.com/homer0/codebox/compare/4.0.0...4.1.0) (2026-11-22)
+
+### Bug Fixes
+
+* upgrade code-server to 4.146.0 ([f0912dd](https://github.com/homer0/codebox/commit/f0912dd62e25ff2d77b090c8612f5f75efb7c043))
+
+### Features
+
+* install Visual Studio Marketplace extensions ([7379e6b](https://github.com/homer0/codebox/commit/7379e6ba6b60eb0fc8004eff9854ba820c4cd8b0))
+
 # [4.0.0](https://github.com/homer0/codebox/compare/3.2.0...4.0.0) (2026-11-21)
 
 ### Bug Fixes
