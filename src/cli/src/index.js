@@ -4,11 +4,18 @@ import { hideBin } from 'yargs/helpers';
 import yargs from 'yargs/yargs';
 import * as consts from './consts.js';
 import * as fns from './fns.js';
+import { installMarketplaceExtensions } from './marketplace.js';
 import { runConfiguredSetupFiles } from './setup-files.js';
 import { installConfiguredSsh } from './ssh-install.js';
 import { unlockConfiguredSshKeys } from './ssh-unlock.js';
 
 yargs(hideBin(process.argv))
+  .command(
+    'install-marketplace-extensions',
+    'Installs configured Visual Studio Marketplace VSIX packages',
+    () => {},
+    installMarketplaceExtensions,
+  )
   .command(
     'unlock-ssh-keys',
     'Unlocks all configured outbound SSH identities in the shared agent',

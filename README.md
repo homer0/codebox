@@ -103,7 +103,7 @@ code-server:
 # Specific options for the VSCode editor
 vscode:
   # A list of extensions that you would want to install when starting the container.
-  # Be aware that these extensions are not from the official VSCode marketpalce, but
+  # Be aware that these extensions are not from the official VSCode marketplace, but
   # from open-vsx.org. You can also install extensions from `.vsix` files, but that's
   # documented in the "VSCode section".
   extensions:
@@ -111,6 +111,10 @@ vscode:
     - EditorConfig.EditorConfig
     # ESLint
     - dbaeumer.vscode-eslint
+  # Optional publisher.name IDs from the Visual Studio Marketplace.
+  # Codebox checks the latest version on startup and skips the download if it is installed.
+  # Failures are logged and do not stop startup. Check Marketplace and extension terms.
+  msMarketplaceExtensions: []
 # Specific options for GIT
 git:
   # The name and email GIT should use for the commits.
