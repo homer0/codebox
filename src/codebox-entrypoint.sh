@@ -170,6 +170,10 @@ else
   echo "=== no local extensions found"
 fi
 
+if ! codeboxcli install-marketplace-extensions; then
+  echo "Marketplace extension setup failed; continuing startup" >&2
+fi
+
 # Change code-server PWA settings
 ICON=$(codeboxcli get-setting icon)
 TPL="/usr/lib/code-server/lib/vscode/out/vs/code/browser/workbench/workbench.html"
