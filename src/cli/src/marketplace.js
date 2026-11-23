@@ -8,6 +8,7 @@ import { getSetting } from './fns.js';
 const run = promisify(execFile);
 const MARKETPLACE = 'https://marketplace.visualstudio.com/_apis/public/gallery';
 const LATEST_VERSION_FLAGS = 513; // Include versions and return only the latest version.
+const MANIFEST_MAX_BUFFER = 4_194_304; // 4 MiB.
 const EXTENSION_ID = /^([a-z\d][a-z\d-]*)\.([a-z\d][a-z\d.-]*)$/i;
 
 /** Look up the latest version without transferring the VSIX. */
@@ -67,7 +68,17 @@ const installExtension = async (id, { directory, installed }) => {
     `${MARKETPLACE}/publishers/${publisher}/vsextensions/${name}/latest/vspackage`,
   ]);
   await run('unzip', ['-tq', archive], { timeout: 30_000 });
-  const { stdout } = await run('unzip', ['-p', archive, 'extension/package.json']);
+  const { stdout } = await run('unzip', ['-p', archive, 'extension/package.json'], {
+    maxBuffer: MANIFEST_MAX_BUFFER,
+  }).catch((error) => {
+    if (
+      error.code === 'ERR_CHILD_PROCESS_STDIO_MAXBUFFER' &&
+      error.message.startsWith('stdout ')
+    ) {
+      throw new Error('VSIX manifest exceeds 4 MiB', { cause: error });
+    }
+    throw error;
+  });
   const manifest = JSON.parse(stdout);
   if (`${manifest.publisher}.${manifest.name}`.toLowerCase() !== id.toLowerCase()) {
     throw new Error('VSIX manifest does not match the requested extension');

@@ -153,9 +153,8 @@ else
   echo "=== no remote extensions found"
 fi
 
-HAS_VSCODE_LOCAL_EXTS=$(codeboxcli has vscode.extensions)
-if [ "$(codeboxcli has vscode.settings)" = "true" ]; then
-  VCODE_LOCAL_EXTS_PATH=$(codeboxcli get-path vscode.extensions)
+VCODE_LOCAL_EXTS_PATH=$(codeboxcli get-path vscode.extensions)
+if [[ -d "$VCODE_LOCAL_EXTS_PATH" ]]; then
   VSCODE_LOCAL_EXTS=$(ls "$VCODE_LOCAL_EXTS_PATH")
   if [[ -n $VSCODE_LOCAL_EXTS ]]; then
     echo "=== installing local extensions..."
