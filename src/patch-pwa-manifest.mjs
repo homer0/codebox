@@ -18,32 +18,56 @@ const main = async () => {
   // These markers make an upstream route change fail visibly instead of
   // modifying an unrelated section of the compiled code-server source.
   const handlerStart = 'exports.router.get("/manifest.json",';
-  const handlerEnd = '\n}));\nlet mintKeyPromise;';
+  const upstreamClose = '\n}));';
+  const nextDeclaration = '\nlet mintKeyPromise;';
+  const patchedStart = `${handlerStart} (req, res) => {
+    res.writeHead(200, { "Content-Type": "application/manifest+json" });
+    res.end((0, http_1.replaceTemplates)(req, `;
+  const patchedClose = '));\n});';
   const [manifestContent, routesContent] = await Promise.all([
     readFile(manifestPath, 'utf8'),
     readFile(routesPath, 'utf8'),
   ]);
   const handlerStartIndex = routesContent.indexOf(handlerStart);
-  const handlerEndIndex = routesContent.indexOf(handlerEnd, handlerStartIndex);
   if (
     handlerStartIndex === -1 ||
-    handlerEndIndex === -1 ||
     routesContent.indexOf(handlerStart, handlerStartIndex + handlerStart.length) !== -1
   ) {
     throw new Error('Unable to locate the code-server manifest handler');
   }
 
+  // Recognize the exact shape written by Codebox, including older installs.
+  const patchedContentIndex = handlerStartIndex + patchedStart.length;
+  const patchedEndIndex = routesContent.indexOf(
+    patchedClose + nextDeclaration,
+    patchedContentIndex,
+  );
+  const hasExistingPatch =
+    routesContent.startsWith(patchedStart, handlerStartIndex) &&
+    patchedEndIndex !== -1 &&
+    /^"(?:[^"\\\n]|\\.)*"$/.test(
+      routesContent.slice(patchedContentIndex, patchedEndIndex),
+    );
+  const upstreamEndIndex = routesContent.indexOf(
+    upstreamClose + nextDeclaration,
+    handlerStartIndex,
+  );
+  if (!hasExistingPatch && upstreamEndIndex === -1) {
+    throw new Error('Unable to locate the code-server manifest handler');
+  }
+  const handlerEndIndex = hasExistingPatch
+    ? patchedEndIndex + patchedClose.length
+    : upstreamEndIndex + upstreamClose.length;
+
   const manifest = JSON.parse(manifestContent);
   const manifestJson = JSON.stringify(manifest, null, manifestIndentation);
-  const handler = `exports.router.get("/manifest.json", (req, res) => {
-    res.writeHead(200, { "Content-Type": "application/manifest+json" });
-    res.end((0, http_1.replaceTemplates)(req, ${JSON.stringify(manifestJson)}));
-});`;
+  const handler = `${patchedStart}${JSON.stringify(manifestJson)}${patchedClose}`;
   const updatedRoutes =
     routesContent.slice(0, handlerStartIndex) +
     handler +
-    routesContent.slice(handlerEndIndex + '\n}));'.length);
+    routesContent.slice(handlerEndIndex);
 
+  if (updatedRoutes === routesContent) return;
   await writeFile(routesPath, updatedRoutes);
 };
 
