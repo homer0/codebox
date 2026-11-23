@@ -1,3 +1,11 @@
+## [4.1.1](https://github.com/homer0/codebox/compare/4.1.0...4.1.1) (2026-11-23)
+
+### Bug Fixes
+
+* allow larger Marketplace extension manifests ([bc5304c](https://github.com/homer0/codebox/commit/bc5304c7b9a884053a8a81fd5106e48d8525a8bf))
+* make the PWA manifest patch safe to rerun ([6ec30c4](https://github.com/homer0/codebox/commit/6ec30c4e26906b924ad5955149ec2a7819a9e439))
+* skip missing local extensions directory ([f0057ad](https://github.com/homer0/codebox/commit/f0057ad093038398743c0a64124f77989eed91ca))
+
 # [4.1.0](https://github.com/homer0/codebox/compare/4.0.0...4.1.0) (2026-11-22)
 
 ### Bug Fixes
