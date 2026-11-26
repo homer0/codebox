@@ -215,7 +215,7 @@ describe('managed SSH installation', () => {
     );
     const installation = entrypoint.slice(
       entrypoint.indexOf('# Validate all desired credentials'),
-      entrypoint.indexOf('# Make explicitly allowed'),
+      entrypoint.indexOf('# Pass default and explicitly allowed'),
     );
     const activation = entrypoint.slice(
       entrypoint.indexOf('# Validate daemon configuration'),
