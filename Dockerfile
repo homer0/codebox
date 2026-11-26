@@ -122,5 +122,7 @@ RUN echo "export CODEBOX_CLI_PATH=/home/coder/.codebox/cli" >> /home/coder/.zshr
 RUN /home/coder/.codebox/cli/install.sh
 RUN sudo ln -s /home/coder/.codebox/cli/bin.sh /usr/bin/codeboxcli
 
+ENV CODEBOX_ENV=true
+
 EXPOSE 22
 EXPOSE 80
