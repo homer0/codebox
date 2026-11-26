@@ -36,10 +36,13 @@ if ! codeboxcli install-ssh; then
   exit 1
 fi
 
-# Make explicitly allowed container variables available to SSH sessions through PAM.
-SSH_ENV_VARS=$(codeboxcli get-setting ssh.env --string-list)
+# Pass default and explicitly allowed variables to SSH sessions through PAM.
+SSH_DEFAULT_ENV=(CODEBOX_ENV)
+SSH_CONFIGURED_ENV=$(codeboxcli get-setting ssh.env --string-list)
+typeset -aU SSH_ENV_VARS
+SSH_ENV_VARS=("${SSH_DEFAULT_ENV[@]}" ${(f)SSH_CONFIGURED_ENV})
 sudo truncate -s 0 /etc/codebox-ssh-environment
-for SSH_ENV_VAR in ${(f)SSH_ENV_VARS}; do
+for SSH_ENV_VAR in "${SSH_ENV_VARS[@]}"; do
   if [[ ! $SSH_ENV_VAR =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]; then
     echo "Invalid SSH environment variable name: $SSH_ENV_VAR"
     exit 1
