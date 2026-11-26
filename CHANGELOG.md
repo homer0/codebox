@@ -1,3 +1,9 @@
+## [4.1.3](https://github.com/homer0/codebox/compare/4.1.2...4.1.3) (2026-11-26)
+
+### Bug Fixes
+
+* expose CODEBOX_ENV in SSH sessions ([49c1392](https://github.com/homer0/codebox/commit/49c1392cf3baf934fe238ecde9660a461582c707))
+
 ## [4.1.2](https://github.com/homer0/codebox/compare/4.1.1...4.1.2) (2026-11-26)
 
 ### Bug Fixes
