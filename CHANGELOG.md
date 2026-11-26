@@ -1,3 +1,11 @@
+## [4.1.2](https://github.com/homer0/codebox/compare/4.1.1...4.1.2) (2026-11-26)
+
+### Bug Fixes
+
+* expose an env var to identify when you are inside the box ([39488df](https://github.com/homer0/codebox/commit/39488df3b811ba3d66eb1ec4e2f8ce5c4ef749d6))
+* resolve dsf paths from the caller's directory ([293b8f0](https://github.com/homer0/codebox/commit/293b8f0ec54385f5e3b44b5820e88c1fe2e1402b))
+* skip gpl cleanup when no branches qualify ([a537504](https://github.com/homer0/codebox/commit/a537504d395457a6194b1e5d31eaa3eab2da19be))
+
 ## [4.1.1](https://github.com/homer0/codebox/compare/4.1.0...4.1.1) (2026-11-23)
 
 ### Bug Fixes
